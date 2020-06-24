@@ -6,6 +6,7 @@ import requestsReducer from './requests'
 import permisReducer from './permis';
 import messagesReducer from './messages'
 import chatsReducer from './chats';
+import storageReducer from './storage';
 const reducers = {
   form: formReducer,
   auth: authReducer,
@@ -13,7 +14,8 @@ const reducers = {
   requests:requestsReducer,
   permis: permisReducer,
   chats: chatsReducer,
-  messages: messagesReducer
+  messages: messagesReducer,
+  storage: storageReducer
 }
 const allReducers= combineReducers(reducers);
 export default allReducers;

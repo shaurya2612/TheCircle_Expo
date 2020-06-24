@@ -1,7 +1,8 @@
-import { AUTHENTICATE,LOGOUT } from "../actions/auth";
+import { AUTHENTICATE,LOGOUT, SET_PHONE_NUMBER } from "../actions/auth";
 
 const initialState = {
-    user: null
+    user: null,
+    phoneNumber: null
 }
 
 export default (state=initialState, action)=>{
@@ -12,6 +13,8 @@ export default (state=initialState, action)=>{
             };
         case LOGOUT:
             return initialState;
+        case SET_PHONE_NUMBER:
+            return {user: state.user, phoneNumber : action.phoneNumber}
         default:
             return state;
     }

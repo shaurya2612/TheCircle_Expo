@@ -52,7 +52,7 @@ const acceptButtonHandler = async (deleteId) =>{
       leftAvatar={{
         size: "large",
         title: "",
-        source: { uri: "https://picsum.photos/200/300" },
+        source: { uri: props.user.displayPicture},
       }}
       titleStyle={{ fontSize: 18, color: Colors.primary, fontWeight: "bold" }}
       subtitleStyle={{ fontSize: 15 }}

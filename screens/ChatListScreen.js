@@ -5,7 +5,6 @@ import * as AuthActions from "../store/actions/auth";
 import firebase from "firebase";
 import { Text } from "native-base";
 import * as chatActions from "../store/actions/chats";
-import * as Fire from "../Fire";
 import Center from "../components/Center";
 import Colors from "../constants/Colors";
 import ChatListAvatar from "../components/ChatListAvatar";

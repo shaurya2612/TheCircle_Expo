@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
 import { AppLoading } from "expo";
 import * as Font from "expo-font";
@@ -13,8 +13,6 @@ import {firebaseConfig} from './config'
 firebase.initializeApp(firebaseConfig);
 
 export const store = createStore(allReducers, applyMiddleware(thunk));
-
-
 
 const fetchFonts = () => {
   return Font.loadAsync({

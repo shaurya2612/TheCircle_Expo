@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, Button, Platform, View } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  createStackNavigator,
+  HeaderBackButton,
+} from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Login from "../screens/Login";
 import Signup from "../screens/Signup";
@@ -22,11 +25,14 @@ import SettingsScreen from "../screens/SettingsScreen";
 import RequestListScreen from "../screens/RequestListScreen";
 import SearchUsersScreen from "../screens/SearchUsersScreen";
 import UserProfileScreen from "../screens/UserProfileScreen";
-import * as Fire from "../Fire";
 import AllPermisList from "../screens/AllPermisList";
+import PhoneAuthScreen from "../screens/PhoneAuthScreen";
+import SignupPhotos from "../screens/SignupPhotos";
+import CurrentUserProfileScreen from "../screens/CurrentUserProfileScreen";
+import EditCurrentUserProfileScreen from "../screens/EditCurrentUserProfileScreen";
 
 const chatHeaderOptions = (props) => {
-  const user = props.route.params.user
+  const user = props.route.params.user;
   return {
     headerTitle: user.name,
     headerStyle: { backgroundColor: Colors.accent },
@@ -61,8 +67,6 @@ const chatHeaderOptions = (props) => {
     headerRight: () => <View></View>,
   };
 };
-
-
 
 const defaultHeaderOptions = (props) => {
   return {
@@ -108,7 +112,9 @@ const AuthNavigator = () => {
   return (
     <AuthStack.Navigator>
       <AuthStack.Screen name="Login" component={Login} />
+      <AuthStack.Screen name="PhoneAuth" component={PhoneAuthScreen} />
       <AuthStack.Screen name="Signup" component={Signup} />
+      <AuthStack.Screen name="SignupPhotos" component={SignupPhotos} />
     </AuthStack.Navigator>
   );
 };
@@ -247,8 +253,34 @@ const ChatScreenStack = createStackNavigator();
 const ChatScreenStackNavigator = () => {
   return (
     <ChatScreenStack.Navigator screenOptions={chatHeaderOptions}>
-      <ChatScreenStack.Screen name={"Chat"} component={ChatScreen}/>
+      <ChatScreenStack.Screen name={"Chat"} component={ChatScreen} />
     </ChatScreenStack.Navigator>
+  );
+};
+
+const CurrentUserProfileStack = createStackNavigator();
+const CurrentUserProfileStackNavigator = () => {
+  return (
+    <CurrentUserProfileStack.Navigator screenOptions={defaultHeaderOptions}>
+      <CurrentUserProfileStack.Screen
+        name={"CurrentUserProfileScreen"}
+        component={CurrentUserProfileScreen}
+      />
+      <CurrentUserProfileStack.Screen
+        name={"EditCurrentUserProfileScreen"}
+        component={EditCurrentUserProfileScreen}
+        options={{
+          headerLeft: (props) => (
+            <HeaderBackButton
+              {...props}
+             onPress={()=>{
+               props.navigation.goBack();
+             }}
+            />
+          ),
+        }}
+      />
+    </CurrentUserProfileStack.Navigator>
   );
 };
 
@@ -264,6 +296,10 @@ const AppDrawerNavigator = () => {
       <AppDrawer.Screen name={"Search"} component={SearchUsersStackNavigator} />
       <AppDrawer.Screen name={"UserProfile"} component={UserProfileScreen} />
       <AppDrawer.Screen
+        name={"CurrentUserProfile"}
+        component={CurrentUserProfileStackNavigator}
+      />
+      <AppDrawer.Screen
         name={"ChatScreen"}
         component={ChatScreenStackNavigator}
       />
@@ -272,7 +308,7 @@ const AppDrawerNavigator = () => {
 };
 
 const AppNavigator = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
