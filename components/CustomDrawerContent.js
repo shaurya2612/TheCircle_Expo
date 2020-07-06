@@ -15,18 +15,19 @@ import {
   Switch,
 } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import * as storageActions from "../store/actions/storage";
+import * as tempStorageActions from "../store/actions/tempStorage";
 import firebase from "firebase";
+import Colors from "../constants/Colors";
 
 const CustomDrawerContent = (props) => {
-  const user = useSelector((state) => state.storage.user);
+  const user = useSelector((state) => state.tempStorage.currentUser);
   const [isLoading, setIsLoading] = useState(true);
   const onPressHandler = async () => {
     props.navigation.navigate("Settings");
   };
   const dispatch = useDispatch();
   const fetchUserData = () => {
-    dispatch(storageActions.fetchUserData(firebase.auth().currentUser.uid));
+    dispatch(tempStorageActions.fetchCurrentUserData());
   };
 
   useEffect(() => {
@@ -48,7 +49,7 @@ const CustomDrawerContent = (props) => {
             >
               <View style={{ flexDirection: "row", marginTop: 15 }}>
                 <Avatar.Image
-                  style={{ marginLeft: 10 }}
+                  style={{ marginLeft: 10, backgroundColor:Colors.accent }}
                   source={{
                     uri: isLoading
                       ? "https://wallpaperplay.com/walls/full/2/c/2/58072.jpg"

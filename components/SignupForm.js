@@ -19,12 +19,10 @@ import firebase from "firebase";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ModalDropdown from "react-native-modal-dropdown";
 import { Icon } from "react-native-elements";
-import PhotoSelector from "./PhotoSelector";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import PhotoCard from "./PhotoCard";
 import SignupFormPhoto from "./SignupFormPhoto";
-import * as storageActions from '../store/actions/storage';
 
 const renderInput = ({ input: { onChange, ...input }, ...rest }) => {
   return (
@@ -116,9 +114,9 @@ const Form = (props) => {
       });
     
     var user = firebase.auth().currentUser;
-    var temp = values.name.split(" ");
-    temp.map((item) => item[0].toUpperCase());
-    values.name = temp.join(" ");
+    // var temp = values.name.split(" ");
+    // temp.map((item) => item[0].toUpperCase());
+    // values.name = temp.join(" ");
     await firebase
       .database()
       .ref("usernames")

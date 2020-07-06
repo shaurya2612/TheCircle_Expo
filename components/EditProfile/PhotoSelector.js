@@ -1,16 +1,27 @@
 import React, { useState, useRef } from "react";
-import { View, Button, Image, Text, StyleSheet, Alert } from "react-native";
-import Colors from "../constants/Colors";
+import { View, Image, Text, StyleSheet, Alert } from "react-native";
+import Colors from "../../constants/Colors";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import SortableGrid from "react-native-sortable-grid";
-import PhotoCard from "./PhotoCard";
-import { ScrollView } from "react-native-gesture-handler";
+import PhotoCard from "../PhotoCard";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import { Button, Icon } from "react-native-elements";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const PhotoSelector = (props) => {
-  const [images, setImages] = useState([]);
+  const dispatch = useDispatch();
+  const id = useSelector((state) => state.auth.user.uid);
+  const previousOrder = useSelector((state) => state.storage.imagesOrder);
+  const [order, setOrder] = useState(
+    useSelector((state) => state.storage.imagesOrder)
+  );
+  const [images, setImages] = useState(useSelector(state=>state.storage.images));
   const [imageDragging, setImageDragging] = useState(false);
   const Grid = useRef("SortableGrid");
+
+  console.log(previousOrder);
 
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -35,9 +46,26 @@ const PhotoSelector = (props) => {
       aspect: [4, 3],
       quality: 0.5,
     });
-    if (image.uri) setImages((prevImages) => [...prevImages, image.uri]);
-    else return;
-    console.log(images);
+    if (image.uri) {
+      let key;
+      let length = images.length;
+      props.onChangeImage((prevImages) => [...prevImages, image.uri]);
+      setImages((prevImages) => [...prevImages, image.uri]);
+      for (var i = 0; i <= 6; i++) {
+        let found = false;
+        for (var j = 0; j < previousOrder.length; j++) {
+          if (previousOrder[j] == i) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          key = i;
+          break;
+        }
+      }
+      dispatch(storageActions.addNewImage(id, image.uri, key, length));
+    } else return;
   };
 
   return (
@@ -49,22 +77,32 @@ const PhotoSelector = (props) => {
           blockTransitionDuration={400}
           activeBlockCenteringDuration={50}
           itemsPerRow={2}
-          dragActivationTreshold={50}
+          dragActivationTreshold={100}
           itemHeight={10}
           onDragRelease={(itemOrder) => {
             setImageDragging(false);
+            props.onDrag(false);
             console.log(
               "Drag was released, the blocks are in the following order: ",
               itemOrder
             );
+            var tempList=[];
+            itemOrder.itemOrder.forEach(item=>{
+              tempList.push(Number(item.key));
+            })
+            setOrder(tempList);
+            props.onOrderChange(tempList);
+            console.log("Here's the order",tempList);
           }}
           onDragStart={() => {
             console.log("Some block is being dragged now!");
             setImageDragging(true);
+            props.onDrag(true);
           }}
           onDeleteItem={(item) => {
+            console.log(item);
             console.log("Deleted Item");
-            setImages((prevImages) => prevImages.splice(item.key, 1));
+            props.onChangeImage((prevImages) => prevImages.splice(item.key, 1));
           }}
         >
           {images.map((letter, index) => (
@@ -72,7 +110,7 @@ const PhotoSelector = (props) => {
               style={styles.block}
               key={index}
               onTap={() => {
-                Grid.current.toggleDeleteMode();
+                images.length > 1 ? Grid.current.toggleDeleteMode() : null;
               }}
             >
               <PhotoCard image={letter} />
@@ -80,12 +118,16 @@ const PhotoSelector = (props) => {
           ))}
         </SortableGrid>
       ) : null}
-
-      <Button
-        title="Take Image"
-        color={Colors.primary}
-        onPress={takeImageHandler}
-      />
+      <View style={styles.buttonContainer}>
+        <Button
+          titleStyle={{ fontFamily: "Quicksand" }}
+          buttonStyle={{ backgroundColor: Colors.primary }}
+          containerStyle={{ width: "35%" }}
+          disabled={images.length >= 6 ? true : false}
+          title="Add Image"
+          onPress={takeImageHandler}
+        />
+      </View>
     </ScrollView>
   );
 };
@@ -111,6 +153,12 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 8,
     borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonContainer: {
+    margin: 20,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

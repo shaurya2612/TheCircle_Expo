@@ -19,6 +19,8 @@ const ChatListAvatar = (props) => {
       });
   };
 
+  console.log("yeh batao", props.user)
+
   return (
     <ListItem
       onPress={onPressHandler}

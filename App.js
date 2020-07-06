@@ -18,6 +18,7 @@ const fetchFonts = () => {
   return Font.loadAsync({
     Roboto_medium: require("./assets/fonts/Roboto-Medium.ttf"),
     Roboto: require("./assets/fonts/Roboto-Regular.ttf"),
+    Quicksand: require("./assets/fonts/Quicksand-Bold.ttf")
   });
 };
 

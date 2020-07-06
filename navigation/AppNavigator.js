@@ -27,84 +27,10 @@ import SearchUsersScreen from "../screens/SearchUsersScreen";
 import UserProfileScreen from "../screens/UserProfileScreen";
 import AllPermisList from "../screens/AllPermisList";
 import PhoneAuthScreen from "../screens/PhoneAuthScreen";
-import SignupPhotos from "../screens/SignupPhotos";
+
 import CurrentUserProfileScreen from "../screens/CurrentUserProfileScreen";
 import EditCurrentUserProfileScreen from "../screens/EditCurrentUserProfileScreen";
-
-const chatHeaderOptions = (props) => {
-  const user = props.route.params.user;
-  return {
-    headerTitle: user.name,
-    headerStyle: { backgroundColor: Colors.accent },
-    headerTintColor: Colors.primary,
-    headerTitleStyle: {
-      justifyContent: "center",
-      flex: 1,
-      fontFamily: "Roboto",
-      fontWeight: "bold",
-    },
-    headerLeft: () => {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.goBack();
-          }}
-        >
-          <Icon
-            containerStyle={{
-              marginLeft: 15,
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-            }}
-            type="feather"
-            size={30}
-            name="arrow-left"
-          />
-        </TouchableOpacity>
-      );
-    },
-    headerRight: () => <View></View>,
-  };
-};
-
-const defaultHeaderOptions = (props) => {
-  return {
-    headerTitle: "The Circle",
-    headerStyle: { backgroundColor: Colors.primary },
-    headerTintColor: Colors.accent,
-    headerTitleStyle: {
-      alignSelf: "center",
-      textAlign: "center",
-      justifyContent: "center",
-      flex: 1,
-      fontFamily: "Roboto",
-      fontWeight: "bold",
-    },
-    headerLeft: () => {
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.toggleDrawer();
-          }}
-        >
-          <Icon
-            containerStyle={{
-              marginLeft: 15,
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10,
-            }}
-            type="ionicon"
-            size={30}
-            name={Platform.OS === "ios" ? "ios-menu" : "md-menu"}
-          />
-        </TouchableOpacity>
-      );
-    },
-    headerRight: () => <View></View>,
-  };
-};
+import { defaultHeaderOptions, chatHeaderOptions, defaultStackHeaderOptions, editScreenHeaderOption } from "./HeaderOptions";
 
 const AuthStack = createStackNavigator();
 
@@ -114,7 +40,7 @@ const AuthNavigator = () => {
       <AuthStack.Screen name="Login" component={Login} />
       <AuthStack.Screen name="PhoneAuth" component={PhoneAuthScreen} />
       <AuthStack.Screen name="Signup" component={Signup} />
-      <AuthStack.Screen name="SignupPhotos" component={SignupPhotos} />
+      {/* <AuthStack.Screen name="SignupPhotos" component={SignupPhotos} /> */}
     </AuthStack.Navigator>
   );
 };
@@ -261,28 +187,29 @@ const ChatScreenStackNavigator = () => {
 const CurrentUserProfileStack = createStackNavigator();
 const CurrentUserProfileStackNavigator = () => {
   return (
-    <CurrentUserProfileStack.Navigator screenOptions={defaultHeaderOptions}>
+    <CurrentUserProfileStack.Navigator>
       <CurrentUserProfileStack.Screen
         name={"CurrentUserProfileScreen"}
         component={CurrentUserProfileScreen}
+        options={defaultHeaderOptions}
       />
       <CurrentUserProfileStack.Screen
         name={"EditCurrentUserProfileScreen"}
         component={EditCurrentUserProfileScreen}
-        options={{
-          headerLeft: (props) => (
-            <HeaderBackButton
-              {...props}
-             onPress={()=>{
-               props.navigation.goBack();
-             }}
-            />
-          ),
-        }}
+        options={editScreenHeaderOption}
       />
     </CurrentUserProfileStack.Navigator>
   );
 };
+
+const UserProfileStack = createStackNavigator();
+const UserProfileStackNavigator = () =>{
+  return(
+    <UserProfileStack.Navigator>
+      <UserProfileStack.Screen name={"UserProfileScreen"} component={UserProfileScreen} options={defaultStackHeaderOptions}/>
+    </UserProfileStack.Navigator>
+  )
+}
 
 const AppDrawer = createDrawerNavigator();
 
@@ -294,7 +221,7 @@ const AppDrawerNavigator = () => {
       <AppDrawer.Screen name={"Home"} component={AppStackNavigator} />
       <AppDrawer.Screen name={"Settings"} component={SettingsNavigator} />
       <AppDrawer.Screen name={"Search"} component={SearchUsersStackNavigator} />
-      <AppDrawer.Screen name={"UserProfile"} component={UserProfileScreen} />
+      <AppDrawer.Screen name={"UserProfile"} component={UserProfileStackNavigator} />
       <AppDrawer.Screen
         name={"CurrentUserProfile"}
         component={CurrentUserProfileStackNavigator}

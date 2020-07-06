@@ -16,8 +16,8 @@ const SignupFormPhoto = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 120,
-    height:120,
+    width:100,
+    height:100,
     borderWidth: 1,
     borderRadius: 100,
     borderColor: Colors.primary,

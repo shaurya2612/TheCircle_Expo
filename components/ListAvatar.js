@@ -4,33 +4,46 @@ import { ListItem } from "react-native-elements";
 import TouchableScale from "react-native-touchable-scale";
 import Colors from "../constants/Colors";
 import ListAvatarRequestButton from "./ListAvatarRequestButton";
-import {useSelector, useDispatch} from 'react-redux';
-import firebase from 'firebase'
-import * as requestActions from '../store/actions/requests'
+import { useSelector, useDispatch } from "react-redux";
+import firebase from "firebase";
+import * as requestActions from "../store/actions/requests";
 
 const ListAvatar = (props) => {
   const dispatch = useDispatch();
-  const uid = useSelector(state => state.auth.user.uid);
+  const uid = useSelector((state) => state.auth.user.uid);
 
   const onPressHandler = () => {
     props.navigation.navigate("UserProfile", {
-      user: props.user
+      screen:"UserProfileScreen",
+      params:{user:props.user}
     });
   };
 
-  const declineButtonHandler = async (deleteId) =>{
+  const declineButtonHandler = async (deleteId) => {
     const database = firebase.database();
-    await database.ref('/requests/'+uid).child(deleteId).remove();
-    await dispatch(requestActions.fetchRequests());
-}
+    await database
+      .ref("/requests/" + uid)
+      .child(deleteId)
+      .remove();
+    dispatch(requestActions.fetchRequests());
+  };
 
-const acceptButtonHandler = async (deleteId) =>{
-  const database = firebase.database();
-  await database.ref('/requests/'+uid).child(deleteId).remove();
-  await database.ref('/permis/'+deleteId).child(uid).set('node');
-  await database.ref('/permis/'+uid).child(deleteId).set('node');
-  await dispatch(requestActions.fetchRequests());
-}
+  const acceptButtonHandler = async (deleteId) => {
+    const database = firebase.database();
+    await database
+      .ref("/requests/" + uid)
+      .child(deleteId)
+      .remove();
+    await database
+      .ref("/permis/" + deleteId)
+      .child(uid)
+      .set("node");
+    await database
+      .ref("/permis/" + uid)
+      .child(deleteId)
+      .set("node");
+    dispatch(requestActions.fetchRequests());
+  };
 
   return (
     <ListItem
@@ -52,14 +65,23 @@ const acceptButtonHandler = async (deleteId) =>{
       leftAvatar={{
         size: "large",
         title: "",
-        source: { uri: props.user.displayPicture},
+        source: { uri: props.user.displayPicture },
       }}
       titleStyle={{ fontSize: 18, color: Colors.primary, fontWeight: "bold" }}
       subtitleStyle={{ fontSize: 15 }}
       title={props.user.name}
       subtitle={`@${props.user.username}`}
-      chevron={props.requestButton?null:{ color: Colors.primary }}
-      rightIcon={props.requestButton?()=><ListAvatarRequestButton declineHandler={()=>declineButtonHandler(props.user.id)} acceptHandler={()=>acceptButtonHandler(props.user.id)} />:null}
+      chevron={props.requestButton ? null : { color: Colors.primary }}
+      rightIcon={
+        props.requestButton
+          ? () => (
+              <ListAvatarRequestButton
+                declineHandler={() => declineButtonHandler(props.user.id)}
+                acceptHandler={() => acceptButtonHandler(props.user.id)}
+              />
+            )
+          : null
+      }
     />
   );
 };
