@@ -30,7 +30,13 @@ import PhoneAuthScreen from "../screens/PhoneAuthScreen";
 
 import CurrentUserProfileScreen from "../screens/CurrentUserProfileScreen";
 import EditCurrentUserProfileScreen from "../screens/EditCurrentUserProfileScreen";
-import { defaultHeaderOptions, chatHeaderOptions, defaultStackHeaderOptions, editScreenHeaderOption } from "./HeaderOptions";
+import {
+  defaultHeaderOptions,
+  chatHeaderOptions,
+  defaultStackHeaderOptions,
+  editScreenHeaderOption,
+} from "./HeaderOptions";
+import TempRoom from "../screens/TempMatching/TempRoom";
 
 const AuthStack = createStackNavigator();
 
@@ -45,21 +51,46 @@ const AuthNavigator = () => {
   );
 };
 
-const TempStack = createStackNavigator();
-const PermiStack = createStackNavigator();
-
-const TempNavigator = () => {
+const MatchingStack = createStackNavigator();
+const MatchingStackNavigator = () => {
   return (
-    <TempStack.Navigator screenOptions={{ headerShown: false }}>
-      <TempStack.Screen name="ChatListScreen" component={ChatListScreen} />
-      {/* <TempStack.Screen name="ChatScreen" component={ChatScreen} /> */}
-    </TempStack.Navigator>
+    <MatchingStack.Navigator>
+      <MatchingStack.Screen
+        name="TempRoom"
+        component={TempRoom}
+        options={{ headerShown: false }}
+      />
+    </MatchingStack.Navigator>
   );
 };
 
-const PermiNavigator = () => {
+const TempBottomTab = createMaterialBottomTabNavigator();
+const TempBottomTabNavigator = () => {
   return (
-    <PermiStack.Navigator screenOptions={{ headerShown: false }}>
+    <TempBottomTab.Navigator barStyle={{ backgroundColor: Colors.primary }} activeColor={Colors.accent}>
+      <TempBottomTab.Screen
+        name="Temps"
+        component={MatchingStackNavigator}
+        options={{
+          tabBarIcon: () => <Icon name="smile" type="feather" />,
+        }}
+      />
+      <TempBottomTab.Screen
+        name="Matches"
+        component={MatchesStackNavigator}
+        options={{
+          tabBarIcon: () => <Icon name="comment-discussion" type="octicon" />,
+        }}
+      />
+    </TempBottomTab.Navigator>
+  );
+};
+
+const PermiStack = createStackNavigator();
+
+const PermiChatsStackNavigator = () => {
+  return (
+    <PermiStack.Navigator screenOptions={defaultHeaderOptions}>
       <PermiStack.Screen name="ChatListScreen" component={ChatListScreen} />
       {/* <PermiStack.Screen name="ChatScreen" component={ChatScreen} /> */}
     </PermiStack.Navigator>
@@ -70,7 +101,7 @@ const PermiAllPermisStack = createStackNavigator();
 
 const PermiAllPermisStackNavigator = () => {
   return (
-    <PermiAllPermisStack.Navigator screenOptions={{ headerShown: false }}>
+    <PermiAllPermisStack.Navigator screenOptions={defaultHeaderOptions}>
       <PermiAllPermisStack.Screen name={"List"} component={AllPermisList} />
       {/* <PermiAllPermisStack.Screen name={'ChatScreen'} component={ChatScreen}/> */}
     </PermiAllPermisStack.Navigator>
@@ -81,7 +112,7 @@ const PermiRequestsStack = createStackNavigator();
 
 const PermiRequestsStackNavigator = () => {
   return (
-    <PermiRequestsStack.Navigator screenOptions={{ headerShown: false }}>
+    <PermiRequestsStack.Navigator screenOptions={defaultHeaderOptions }>
       <PermiRequestsStack.Screen name={"List"} component={RequestListScreen} />
     </PermiRequestsStack.Navigator>
   );
@@ -97,7 +128,7 @@ const PermiBottomTabNavigator = () => {
     >
       <PermiBottomTab.Screen
         name={"Chats"}
-        component={PermiNavigator}
+        component={PermiChatsStackNavigator}
         options={{
           tabBarIcon: () => <Icon name="comment-discussion" type="octicon" />,
         }}
@@ -121,30 +152,41 @@ const PermiBottomTabNavigator = () => {
   );
 };
 
-const AppTab = createMaterialTopTabNavigator();
-
-const AppTabNavigator = () => {
+const ChatScreenStack = createStackNavigator();
+const ChatScreenStackNavigator = () => {
   return (
-    <AppTab.Navigator
-      tabBarOptions={{
-        activeTintColor: Colors.accent,
-        inactiveTintColor: Colors.accent,
-        labelStyle: { fontSize: 15, fontFamily: "Roboto" },
-        indicatorStyle: { backgroundColor: Colors.accent },
-        style: { backgroundColor: Colors.primary },
-      }}
-    >
-      <AppTab.Screen name="Permis" component={PermiBottomTabNavigator} />
-      <AppTab.Screen name="Temps" component={TempNavigator} />
-    </AppTab.Navigator>
+    <ChatScreenStack.Navigator screenOptions={chatHeaderOptions}>
+      <ChatScreenStack.Screen name={"Chat"} component={ChatScreen} />
+    </ChatScreenStack.Navigator>
   );
 };
+// const AppTab = createMaterialTopTabNavigator();
+
+// const AppTabNavigator = () => {
+//   return (
+//     <AppTab.Navigator
+//       tabBarOptions={{
+//         activeTintColor: Colors.accent,
+//         inactiveTintColor: Colors.accent,
+//         labelStyle: { fontSize: 15, fontFamily: "Roboto" },
+//         indicatorStyle: { backgroundColor: Colors.accent },
+//         style: { backgroundColor: Colors.primary },
+//       }}
+//     >
+//       <AppTab.Screen name="Permis" component={PermiBottomTabNavigator} />
+//       <AppTab.Screen name="Temps" component={TempNavigator} />
+//     </AppTab.Navigator>
+//   );
+// };
 
 const AppStack = createStackNavigator();
 const AppStackNavigator = () => {
   return (
     <AppStack.Navigator screenOptions={defaultHeaderOptions}>
-      <AppStack.Screen name="AppTab" component={AppTabNavigator} />
+      <AppStack.Screen
+        name="PermiBottomTabNavigator"
+        component={TempBottomTabNavigator}
+      />
     </AppStack.Navigator>
   );
 };
@@ -175,12 +217,12 @@ const SearchUsersStackNavigator = () => {
 //   </UserProfileStack.Navigator>)
 // }
 
-const ChatScreenStack = createStackNavigator();
-const ChatScreenStackNavigator = () => {
+const MatchScreenStack = createStackNavigator();
+const MatchesStackNavigator = () => {
   return (
-    <ChatScreenStack.Navigator screenOptions={chatHeaderOptions}>
-      <ChatScreenStack.Screen name={"Chat"} component={ChatScreen} />
-    </ChatScreenStack.Navigator>
+    <MatchScreenStack.Navigator screenOptions={{headerShown:false}}>
+      <MatchScreenStack.Screen name={"ChatList"} component={ChatListScreen} />
+    </MatchScreenStack.Navigator>
   );
 };
 
@@ -203,13 +245,17 @@ const CurrentUserProfileStackNavigator = () => {
 };
 
 const UserProfileStack = createStackNavigator();
-const UserProfileStackNavigator = () =>{
-  return(
+const UserProfileStackNavigator = () => {
+  return (
     <UserProfileStack.Navigator>
-      <UserProfileStack.Screen name={"UserProfileScreen"} component={UserProfileScreen} options={defaultStackHeaderOptions}/>
+      <UserProfileStack.Screen
+        name={"UserProfileScreen"}
+        component={UserProfileScreen}
+        options={defaultStackHeaderOptions}
+      />
     </UserProfileStack.Navigator>
-  )
-}
+  );
+};
 
 const AppDrawer = createDrawerNavigator();
 
@@ -221,7 +267,10 @@ const AppDrawerNavigator = () => {
       <AppDrawer.Screen name={"Home"} component={AppStackNavigator} />
       <AppDrawer.Screen name={"Settings"} component={SettingsNavigator} />
       <AppDrawer.Screen name={"Search"} component={SearchUsersStackNavigator} />
-      <AppDrawer.Screen name={"UserProfile"} component={UserProfileStackNavigator} />
+      <AppDrawer.Screen
+        name={"UserProfile"}
+        component={UserProfileStackNavigator}
+      />
       <AppDrawer.Screen
         name={"CurrentUserProfile"}
         component={CurrentUserProfileStackNavigator}
@@ -230,6 +279,7 @@ const AppDrawerNavigator = () => {
         name={"ChatScreen"}
         component={ChatScreenStackNavigator}
       />
+      <AppDrawer.Screen name={"Permis"} component={PermiBottomTabNavigator} />
     </AppDrawer.Navigator>
   );
 };

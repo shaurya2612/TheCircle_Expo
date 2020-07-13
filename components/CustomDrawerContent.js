@@ -81,6 +81,15 @@ const CustomDrawerContent = (props) => {
           />
           <DrawerItem
             icon={({ color, size }) => (
+              <Icon name="account" color={color} size={size} />
+            )}
+            label="Permis"
+            onPress={() => {
+              props.navigation.navigate("Permis");
+            }}
+          />
+          <DrawerItem
+            icon={({ color, size }) => (
               <Icon name="account-search" color={color} size={size} />
             )}
             label="Search People"
@@ -88,6 +97,7 @@ const CustomDrawerContent = (props) => {
               props.navigation.navigate("Search");
             }}
           />
+          
         </Drawer.Section>
       </DrawerContentScrollView>
 

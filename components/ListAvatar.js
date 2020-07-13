@@ -14,8 +14,8 @@ const ListAvatar = (props) => {
 
   const onPressHandler = () => {
     props.navigation.navigate("UserProfile", {
-      screen:"UserProfileScreen",
-      params:{user:props.user}
+      screen: "UserProfileScreen",
+      params: { user: props.user },
     });
   };
 
@@ -34,14 +34,23 @@ const ListAvatar = (props) => {
       .ref("/requests/" + uid)
       .child(deleteId)
       .remove();
-    await database
-      .ref("/permis/" + deleteId)
-      .child(uid)
-      .set("node");
-    await database
-      .ref("/permis/" + uid)
-      .child(deleteId)
-      .set("node");
+    console.log(deleteId);
+    let currentUserGender;
+    await database.ref(`/genders/${uid}`).once("value", (snapshot) => {
+      currentUserGender = snapshot.val().gender;
+      console.log("cug", currentUserGender);
+    });
+    await database.ref(`/permis/${deleteId}`).child(uid).set(currentUserGender);
+
+    let userGender;
+    await database.ref(`/genders/${deleteId}`).once("value", (snapshot) => {
+      userGender = snapshot.val().gender;
+      console.log("ug", userGender);
+    });
+
+    let obj = {};
+    obj[deleteId] = userGender;
+    await database.ref(`/permis/${uid}`).update(obj);
     dispatch(requestActions.fetchRequests());
   };
 

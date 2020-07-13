@@ -5,7 +5,7 @@ export const FETCH_CURRENT_USER_DATA = "FETCH_CURRENT_USER_DATA";
 export const FETCH_CURRENT_USER_IMAGES = "FETCH_CURRENT_USER_IMAGES";
 export const FETCH_CURRENT_USER_PROFILE_DATA =
   "FETCH_CURRENT_USER_PROFILE_DATA";
-("FETCH_CURRENT_USER_PROFILE_DATA");
+export const FETCH_CURRENT_USER_GENDER = "FETCH_CURRENT_USER_GENDER";
 
 import firebase from "firebase";
 
@@ -100,3 +100,15 @@ export const changeAbout = (newAbout) => {
     database.ref(`/userProfileData/${id}`).update({ about: newAbout });
   };
 };
+
+export const fetchCurrentUserGender = () =>{
+  return async (dispatch, getState)=>{
+    console.log("aaya")
+    const id = getState().auth.user.uid;
+    const database = firebase.database();
+    database.ref(`/genders/${id}`).once('value', snapshot=>{
+      console.log("gender sent", snapshot.val())
+      dispatch({type:FETCH_CURRENT_USER_GENDER, data:snapshot.val()});
+    })
+  }
+}

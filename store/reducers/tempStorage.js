@@ -5,12 +5,14 @@ import {
   FETCH_CURRENT_USER_DATA,
   FETCH_CURRENT_USER_IMAGES,
   FETCH_CURRENT_USER_PROFILE_DATA,
+  FETCH_CURRENT_USER_GENDER
 } from "../actions/tempStorage";
 
 initialState = {
   currentUser: { null: true },
   currentUserImages: [],
   currentUserProfileData: { null: true },
+  currentUserGender : { null:true },
   tempUser: { null: true },
   tempImages: [],
   tempUserProfileData: { null: true },
@@ -42,6 +44,8 @@ export default (state = initialState, action) => {
       } else {
         return { ...state, currentUserProfileData: { null: true } };
       }
+    case FETCH_CURRENT_USER_GENDER:
+        return{...state, currentUserGender: action.data};
     default:
       return state;
   }

@@ -112,7 +112,7 @@ const Form = (props) => {
           displayName: values.name,
         });
       });
-    
+
     var user = firebase.auth().currentUser;
     // var temp = values.name.split(" ");
     // temp.map((item) => item[0].toUpperCase());
@@ -124,11 +124,20 @@ const Form = (props) => {
       .set(user.uid);
     await firebase.database().ref("birthDates").child(user.uid).set(birthDate);
     if (moreSelected) {
-      await firebase.database().ref("genders").child(user.uid).set({
-        gender: gender,
-        genderIdentity: values.more,
-        interestedIn: interestedIn,
-      });
+      await firebase
+        .database()
+        .ref("genders")
+        .child(user.uid)
+        .set({
+          gender: gender,
+          genderIdentity: values.more,
+          interestedIn:
+            interestedIn === "Men"
+              ? "Male"
+              : interestedIn === "Women"
+              ? "Female"
+              : "Both",
+        });
     } else {
       await firebase.database().ref("genders").child(user.uid).set({
         gender: gender,
@@ -145,7 +154,9 @@ const Form = (props) => {
 
     await storage.ref(`/userImages/${user.uid}/0`).put(blob);
 
-    const dpUrl = await storage.ref(`/userImages/${user.uid}/0`).getDownloadURL();
+    const dpUrl = await storage
+      .ref(`/userImages/${user.uid}/0`)
+      .getDownloadURL();
 
     await firebase
       .database()
@@ -154,14 +165,18 @@ const Form = (props) => {
         username: values.username,
         name: values.name,
         age: age,
-        displayPicture: dpUrl
+        displayPicture: dpUrl,
       });
 
-      firebase.auth().currentUser.updateProfile({
-        photoURL:dpUrl
-      })
+    firebase.auth().currentUser.updateProfile({
+      photoURL: dpUrl,
+    });
 
-      setIsLoading(false);
+    var obj = {};
+    obj[user.uid] = 0;
+    await firebase.database().ref("/matchingStatus").update(obj);
+
+    setIsLoading(false);
   };
 
   const genders = ["Male", "Female", "More"];
