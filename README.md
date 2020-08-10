@@ -1,2 +1,2 @@
-# The-Circle
-Networking App
+# The Circle
+A Networking App
