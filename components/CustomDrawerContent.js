@@ -35,7 +35,7 @@ const CustomDrawerContent = (props) => {
     setIsLoading(false);
   }, []);
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor:Colors.darkbg }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           <View syle={styles.userInfoSection}>
@@ -72,8 +72,9 @@ const CustomDrawerContent = (props) => {
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="home-outline" color={color} size={size} />
+              <Icon name="home-outline" color={Colors.accent}  size={28} />
             )}
+            labelStyle={{color:Colors.accent, fontFamily:"Quicksand"}}
             label="Home"
             onPress={() => {
               props.navigation.navigate("Home");
@@ -81,8 +82,9 @@ const CustomDrawerContent = (props) => {
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="account" color={color} size={size} />
+              <Icon name="account" color={Colors.accent} size={28} />
             )}
+            labelStyle={{color:Colors.accent, fontFamily:"Quicksand"}}
             label="Permis"
             onPress={() => {
               props.navigation.navigate("Permis");
@@ -90,8 +92,9 @@ const CustomDrawerContent = (props) => {
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="account-search" color={color} size={size} />
+              <Icon name="account-search" color={Colors.accent} size={28} />
             )}
+            labelStyle={{color:Colors.accent, fontFamily:"Quicksand"}}
             label="Search People"
             onPress={() => {
               props.navigation.navigate("Search");
@@ -104,8 +107,9 @@ const CustomDrawerContent = (props) => {
       <Drawer.Section style={styles.bottomDrawerSection}>
         <DrawerItem
           icon={({ color, size }) => (
-            <Icon name="settings-outline" color={color} size={size} />
+            <Icon name="settings-outline" color={Colors.accent} size={28} />
           )}
+          labelStyle={{color:Colors.accent, fontFamily:"Quicksand"}}
           label="Settings"
           onPress={onPressHandler}
         />
@@ -117,23 +121,28 @@ const CustomDrawerContent = (props) => {
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
+    backgroundColor:Colors.darkbg
   },
   userInfoSection: {
+    backgroundColor:Colors.darkbg,
     paddingLeft: 20,
   },
   title: {
     fontSize: 16,
     marginTop: 3,
     fontWeight: "bold",
+    color:Colors.accent
   },
   caption: {
     fontSize: 14,
     lineHeight: 14,
+    color:Colors.accent
   },
   row: {
     marginTop: 20,
     flexDirection: "row",
     alignItems: "center",
+    
   },
   section: {
     flexDirection: "row",
@@ -145,6 +154,7 @@ const styles = StyleSheet.create({
     marginRight: 3,
   },
   drawerSection: {
+    backgroundColor:Colors.darkbg,
     marginTop: 15,
   },
   bottomDrawerSection: {

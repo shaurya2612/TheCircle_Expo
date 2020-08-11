@@ -4,9 +4,9 @@ import { Icon } from 'react-native-elements';
 import Colors from '../../constants/Colors';
 
 const ProfileActionButton = (props) => (
-    <ActionButton buttonColor={Colors.primary}>
+    <ActionButton buttonColor={Colors.gradient}>
         <ActionButton.Item
-          buttonColor={Colors.primary}
+          buttonColor={Colors.gradient}
           onPress={() => {
             props.navigation.navigate("EditCurrentUserProfileScreen", {
               profileData : props.profileData 

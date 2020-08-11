@@ -1,4 +1,8 @@
-import { FETCH_REQUESTS } from "../actions/requests";
+import {
+  FETCH_REQUESTS,
+  ADD_REQUEST,
+  REMOVE_REQUEST,
+} from "../actions/requests";
 
 const initialState = {
   requests: [],
@@ -7,7 +11,14 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case FETCH_REQUESTS:
-      return { requests: action.requests };
+      return { ...state, requests: action.requests };
+    case ADD_REQUEST:
+      return { ...state, requests: [...state.requests, action.data] };
+    case REMOVE_REQUEST:
+      let updatedRequests = state.requests.filter((obj) => {
+        return obj.id != action.data;
+      });
+      return { ...state, requests: updatedRequests };
     default:
       return state;
   }

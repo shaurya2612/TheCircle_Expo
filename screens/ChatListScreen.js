@@ -9,24 +9,20 @@ import Center from "../components/Center";
 import Colors from "../constants/Colors";
 import ChatListAvatar from "../components/ChatListAvatar";
 
-
 const ChatListScreen = (props) => {
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = useSelector((state) => state.chats.chatListScreenLoading);
   const chats = useSelector((state) => state.chats.chats);
-  
-  const fetchPermis = async () => {
+
+  const fetchChats = () => {
     dispatch(chatActions.fetchChats());
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchPermis().then(() => {
-      setIsLoading(false);
-    });
-  },[setIsLoading]);
+    fetchChats();
+  }, []);
 
-  if (isLoading) {
+  if (!isLoading) {
     return (
       <Center>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -36,11 +32,12 @@ const ChatListScreen = (props) => {
 
   return (
     <View>
-      {/* <FlatList
-          data={chats}
-          renderItem={(itemData) => (
-            <ChatListAvatar {...props} user={itemData.item} />
-          )}/> */}
+      <FlatList
+        data={chats}
+        renderItem={(itemData) => (
+          <ChatListAvatar {...props} user={itemData.item} />
+        )}
+      />
     </View>
   );
 };

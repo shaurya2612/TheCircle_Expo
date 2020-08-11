@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   infoBarText: {
-    color: Colors.darkText,
+    color: Colors.accent,
     fontSize: 28,
     letterSpacing: 1,
     fontFamily: "Quicksand",

@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  View,
-  Button,
-  ActivityIndicator,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, ActivityIndicator, StyleSheet, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Text } from "native-base";
 import firebase from "firebase";
@@ -18,10 +12,13 @@ import InfoBar from "../components/Profile/InfoBar";
 import HorizontalScrollCard from "../components/Profile/HorizontalScrollCard";
 import OnLayout from "react-native-on-layout";
 import TextCard from "../components/Profile/TextCard";
+import { Button } from "react-native-paper";
 
 const UserProfileScreen = (props) => {
   const images = useSelector((state) => state.tempStorage.tempImages);
-  const profileData = useSelector((state) => state.tempStorage.tempUserProfileData);
+  const profileData = useSelector(
+    (state) => state.tempStorage.tempUserProfileData
+  );
   const [imagesAreLoading, setImagesAreLoading] = useState(true);
   const [profileIsLoading, setProfileIsLoading] = useState(true);
   const currentUser = useSelector((state) => state.auth.user);
@@ -147,25 +144,46 @@ const UserProfileScreen = (props) => {
         </OnLayout>
         {!isPermi ? (
           isSent ? (
-            <Button
-              disabled={true}
-              color={Colors.primary}
-              title="Request already sent !"
-            />
+            <View style={{ flex: 1, alignItems: "flex-end" }}>
+              <View style={styles.buttonContainer}>
+                <Button
+                  disabled={true}
+                  style={styles.button}
+                  color={Colors.accent}
+                >
+                  Request already sent!
+                </Button>
+              </View>
+            </View>
           ) : isInRequests ? (
-            <Button
-              color={Colors.primary}
-              title="accept request?"
-              onPress={() => {
-                acceptButtonHandler(user.id);
-              }}
-            />
+            <View style={{ flex: 1, alignItems: "flex-end" }}>
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={acceptButtonHandler(user.uid)}
+                  style={styles.button}
+                  color={Colors.accent}
+                >
+                  Accept Request
+                </Button>
+              </View>
+            </View>
           ) : (
-            <Button
-              color={Colors.primary}
-              title="Send Permi Request!"
-              onPress={sendRequestHandler}
-            />
+            // <Button
+            //   color={Colors.primary}
+            //   title="Send Permi Request!"
+            //   onPress={sendRequestHandler}
+            // />
+            <View style={{ flex: 1, alignItems: "flex-end" }}>
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={sendRequestHandler}
+                  style={styles.button}
+                  color={Colors.accent}
+                >
+                  Send Permi Request
+                </Button>
+              </View>
+            </View>
           )
         ) : null}
         {profileIsLoading ? (
@@ -177,7 +195,9 @@ const UserProfileScreen = (props) => {
           </View>
         ) : (
           <Center>
-            <Text>This person is too introverted! :o</Text>
+            <Text style={{ color: Colors.accent }}>
+              This person is too introverted! :o
+            </Text>
           </Center>
         )}
       </ScrollView>
@@ -186,7 +206,19 @@ const UserProfileScreen = (props) => {
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.accent },
+  root: { flex: 1, backgroundColor: Colors.darkbg },
+  button: {
+    backgroundColor: Colors.gradient,
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 0,
+    marginTop: 1.5,
+    borderColor: Colors.accent,
+  },
+  buttonContainer: {
+    width: "50%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default UserProfileScreen;

@@ -35,11 +35,12 @@ import {
   chatHeaderOptions,
   defaultStackHeaderOptions,
   editScreenHeaderOption,
+  defaultIOSHeaderOptions,
 } from "./HeaderOptions";
 import TempRoom from "../screens/TempMatching/TempRoom";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const AuthStack = createStackNavigator();
-
 const AuthNavigator = () => {
   return (
     <AuthStack.Navigator>
@@ -58,28 +59,57 @@ const MatchingStackNavigator = () => {
       <MatchingStack.Screen
         name="TempRoom"
         component={TempRoom}
-        options={{ headerShown: false }}
       />
     </MatchingStack.Navigator>
   );
 };
 
-const TempBottomTab = createMaterialBottomTabNavigator();
+const TempBottomTab =
+  Platform.OS === "ios"
+    ? createBottomTabNavigator()
+    : createMaterialBottomTabNavigator();
 const TempBottomTabNavigator = () => {
   return (
-    <TempBottomTab.Navigator barStyle={{ backgroundColor: Colors.primary }} activeColor={Colors.accent}>
+    <TempBottomTab.Navigator
+      tabBarOptions={
+        Platform.OS === "ios"
+          ? {
+              tabStyle: { backgroundColor: Colors.primary },
+              activeTintColor: Colors.accent,
+              labelStyle: { fontSize: 12 },
+            }
+          : null
+      }
+      style={Platform.OS === "ios" ? { marginBottom: 20 } : null}
+      barStyle={{ backgroundColor: Colors.primary }}
+      activeColor={Colors.accent}
+    >
       <TempBottomTab.Screen
         name="Temps"
         component={MatchingStackNavigator}
         options={{
-          tabBarIcon: () => <Icon name="smile" type="feather" />,
+          tabBarIcon: () => (
+            <Icon
+              containerStyle={Platform.OS === "ios" ? { marginTop: 6 } : null}
+              name="target"
+              type="feather"
+              color={Colors.accent}
+            />
+          ),
         }}
       />
       <TempBottomTab.Screen
         name="Matches"
         component={MatchesStackNavigator}
         options={{
-          tabBarIcon: () => <Icon name="comment-discussion" type="octicon" />,
+          tabBarIcon: () => (
+            <Icon
+              containerStyle={Platform.OS === "ios" ? { marginTop: 6 } : null}
+              name="message-circle"
+              type="feather"
+              color={Colors.accent}
+            />
+          ),
         }}
       />
     </TempBottomTab.Navigator>
@@ -90,7 +120,11 @@ const PermiStack = createStackNavigator();
 
 const PermiChatsStackNavigator = () => {
   return (
-    <PermiStack.Navigator screenOptions={defaultHeaderOptions}>
+    <PermiStack.Navigator
+      screenOptions={
+        Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+      }
+    >
       <PermiStack.Screen name="ChatListScreen" component={ChatListScreen} />
       {/* <PermiStack.Screen name="ChatScreen" component={ChatScreen} /> */}
     </PermiStack.Navigator>
@@ -101,7 +135,11 @@ const PermiAllPermisStack = createStackNavigator();
 
 const PermiAllPermisStackNavigator = () => {
   return (
-    <PermiAllPermisStack.Navigator screenOptions={defaultHeaderOptions}>
+    <PermiAllPermisStack.Navigator
+      screenOptions={
+        Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+      }
+    >
       <PermiAllPermisStack.Screen name={"List"} component={AllPermisList} />
       {/* <PermiAllPermisStack.Screen name={'ChatScreen'} component={ChatScreen}/> */}
     </PermiAllPermisStack.Navigator>
@@ -112,40 +150,65 @@ const PermiRequestsStack = createStackNavigator();
 
 const PermiRequestsStackNavigator = () => {
   return (
-    <PermiRequestsStack.Navigator screenOptions={defaultHeaderOptions }>
+    <PermiRequestsStack.Navigator
+      screenOptions={
+        Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+      }
+    >
       <PermiRequestsStack.Screen name={"List"} component={RequestListScreen} />
     </PermiRequestsStack.Navigator>
   );
 };
 
-const PermiBottomTab = createMaterialBottomTabNavigator();
+const PermiBottomTab =
+  Platform.OS === "ios"
+    ? createBottomTabNavigator()
+    : createMaterialBottomTabNavigator();
 
 const PermiBottomTabNavigator = () => {
   return (
     <PermiBottomTab.Navigator
+      tabBarOptions={
+        Platform.OS === "ios"
+          ? {
+              tabStyle: { backgroundColor: Colors.primary },
+              activeTintColor: Colors.accent,
+              labelStyle: { fontSize: 12 },
+            }
+          : null
+      }
       barStyle={{ backgroundColor: Colors.primary }}
       activeColor={Colors.accent}
     >
       <PermiBottomTab.Screen
-        name={"Chats"}
-        component={PermiChatsStackNavigator}
+        name={"allPermis"}
+        component={PermiAllPermisStackNavigator}
         options={{
-          tabBarIcon: () => <Icon name="comment-discussion" type="octicon" />,
+          tabBarLabel: "All Permis",
+          tabBarIcon: () => (
+            <Icon
+              containerStyle={Platform.OS === "ios" ? { marginTop: 6 } : null}
+              name="users"
+              type="feather"
+              size={20}
+              color={Colors.accent}
+            />
+          ),
         }}
       />
       <PermiBottomTab.Screen
         name={"Requests"}
         component={PermiRequestsStackNavigator}
         options={{
-          tabBarIcon: () => <Icon name="user-plus" type="feather" size={20} />,
-        }}
-      />
-      <PermiBottomTab.Screen
-        name={"allPermis"}
-        component={PermiAllPermisStackNavigator}
-        options={{
-          tabBarLabel: "All Permis",
-          tabBarIcon: () => <Icon name="users" type="feather" size={20} />,
+          tabBarIcon: () => (
+            <Icon
+              containerStyle={Platform.OS === "ios" ? { marginTop: 6 } : null}
+              name="user-plus"
+              type="feather"
+              size={20}
+              color={Colors.accent}
+            />
+          ),
         }}
       />
     </PermiBottomTab.Navigator>
@@ -182,9 +245,13 @@ const ChatScreenStackNavigator = () => {
 const AppStack = createStackNavigator();
 const AppStackNavigator = () => {
   return (
-    <AppStack.Navigator screenOptions={defaultHeaderOptions}>
+    <AppStack.Navigator
+      screenOptions={
+        Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+      }
+    >
       <AppStack.Screen
-        name="PermiBottomTabNavigator"
+        name="TempBottomTabNavigator"
         component={TempBottomTabNavigator}
       />
     </AppStack.Navigator>
@@ -195,7 +262,11 @@ const SettingsStack = createStackNavigator();
 
 const SettingsNavigator = () => {
   return (
-    <SettingsStack.Navigator screenOptions={defaultHeaderOptions}>
+    <SettingsStack.Navigator
+      screenOptions={
+        Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+      }
+    >
       <SettingsStack.Screen name={"Settings"} component={SettingsScreen} />
     </SettingsStack.Navigator>
   );
@@ -204,7 +275,11 @@ const SettingsNavigator = () => {
 const SearchUsersStack = createStackNavigator();
 const SearchUsersStackNavigator = () => {
   return (
-    <SearchUsersStack.Navigator screenOptions={defaultHeaderOptions}>
+    <SearchUsersStack.Navigator
+      screenOptions={
+        Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+      }
+    >
       <SearchUsersStack.Screen name={"Users"} component={SearchUsersScreen} />
     </SearchUsersStack.Navigator>
   );
@@ -220,7 +295,7 @@ const SearchUsersStackNavigator = () => {
 const MatchScreenStack = createStackNavigator();
 const MatchesStackNavigator = () => {
   return (
-    <MatchScreenStack.Navigator screenOptions={{headerShown:false}}>
+    <MatchScreenStack.Navigator screenOptions={{ headerShown: false }}>
       <MatchScreenStack.Screen name={"ChatList"} component={ChatListScreen} />
     </MatchScreenStack.Navigator>
   );
@@ -233,7 +308,9 @@ const CurrentUserProfileStackNavigator = () => {
       <CurrentUserProfileStack.Screen
         name={"CurrentUserProfileScreen"}
         component={CurrentUserProfileScreen}
-        options={defaultHeaderOptions}
+        options={
+          Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+        }
       />
       <CurrentUserProfileStack.Screen
         name={"EditCurrentUserProfileScreen"}

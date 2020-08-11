@@ -1,14 +1,16 @@
-import React, {useState} from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import React, { useState, Fragment } from "react";
+import { StyleSheet, StatusBar, SafeAreaView } from "react-native";
 import AppNavigator from "./navigation/AppNavigator";
 import { AppLoading } from "expo";
 import * as Font from "expo-font";
 import { createStore, applyMiddleware } from "redux";
 import allReducers from "./store/reducers";
 import { Provider } from "react-redux";
-import thunk from 'redux-thunk';
+import thunk from "redux-thunk";
 import firebase from "firebase";
-import {firebaseConfig} from './config'
+import { firebaseConfig } from "./config";
+import Colors from "./constants/Colors";
+import 'react-native-gesture-handler';
 
 firebase.initializeApp(firebaseConfig);
 
@@ -18,7 +20,10 @@ const fetchFonts = () => {
   return Font.loadAsync({
     Roboto_medium: require("./assets/fonts/Roboto-Medium.ttf"),
     Roboto: require("./assets/fonts/Roboto-Regular.ttf"),
-    Quicksand: require("./assets/fonts/Quicksand-Bold.ttf")
+    Quicksand: require("./assets/fonts/Quicksand-Bold.ttf"),
+    Pacifico: require("./assets/fonts/Pacifico-Regular.ttf"),
+    Bebas:require("./assets/fonts/BebasNeue-Regular.ttf"),
+    GreatVibes:require("./assets/fonts/GreatVibes-Regular.ttf")
   });
 };
 
@@ -37,9 +42,15 @@ export default function App() {
   }
 
   return (
-    <Provider store={store}>
-      <AppNavigator />
-    </Provider>
+    <Fragment>
+      <SafeAreaView style={{ flex: 0, backgroundColor: Colors.primary }} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: Colors.primary }}>
+      <StatusBar barStyle="auto" />
+        <Provider store={store}>
+          <AppNavigator />
+        </Provider>
+      </SafeAreaView>
+    </Fragment>
   );
 }
 

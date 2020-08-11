@@ -48,32 +48,55 @@ export const changeCurrentUserMatchingStatus = (status) => {
       });
       if (hasPermis) {
         while (permis.length > 0) {
-          const randomPermiIndex =
-            Math.floor(Math.random() * (permis.length - 1 - 0 + 1)) +
-            (permis.length - 1);
+          const randomPermiIndex = Math.floor(
+            Math.random() * (permis.length - 0) + 0
+          );
+          console.log("PEMIS", permis);
+          console.log("RAND YAHA", randomPermiIndex);
           const chosenPermiId = permis[randomPermiIndex];
           let temps = [];
           let hasPotentialMatches;
-          await db
-            .ref(`/permis/${chosenPermiId}`)
-            .orderByValue()
-            .equalTo(currentUserGenderData.interestedIn)
-            .once("value", (snapshot) => {
-              if (snapshot.exists()) {
-                temps = Object.keys(snapshot.val());
-                console.log("temps", temps);
-                if (temps.indexOf(currentUser.uid) >= 0) {
-                  temps.splice(temps.indexOf(currentUser.uid));
+          if (currentUser.interestedIn != "Both") {
+            await db
+              .ref(`/permis/${chosenPermiId}`)
+              .orderByValue()
+              .equalTo(currentUserGenderData.interestedIn)
+              .once("value", (snapshot) => {
+                if (snapshot.exists()) {
+                  temps = Object.keys(snapshot.val());
+                  console.log("temps", temps);
+                  if (temps.indexOf(currentUser.uid) >= 0) {
+                    temps.splice(temps.indexOf(currentUser.uid));
+                  }
+                  hasPotentialMatches = true;
+                } else {
+                  hasPotentialMatches = false;
+                  console.log("no potential");
+                  permis.splice(randomPermiIndex, 1);
                 }
-                hasPotentialMatches = true;
-              } else {
-                hasPotentialMatches = false;
-                console.log("no potential");
-                permis.splice(randomPermiIndex, 1);
-              }
-            });
+              });
 
-          if (!hasPotentialMatches) continue;
+            if (!hasPotentialMatches) continue;
+          } else {
+            await db
+              .ref(`/permis/${chosenPermiId}`)
+              .once("value", (snapshot) => {
+                if (snapshot.exists()) {
+                  temps = Object.keys(snapshot.val());
+                  console.log("temps", temps);
+                  if (temps.indexOf(currentUser.uid) >= 0) {
+                    temps.splice(temps.indexOf(currentUser.uid));
+                  }
+                  hasPotentialMatches = true;
+                } else {
+                  hasPotentialMatches = false;
+                  console.log("no potential");
+                  permis.splice(randomPermiIndex, 1);
+                }
+              });
+
+            if (!hasPotentialMatches) continue;
+          }
 
           let minTime = new Date(8640000000000000);
 
@@ -81,23 +104,25 @@ export const changeCurrentUserMatchingStatus = (status) => {
             const dbRef = db.ref(`/waitingUsers/${temps[i]}`);
             await dbRef.once("value", async (snapshot) => {
               if (snapshot.exists()) {
+                // console.log("YAHA", snapshot.val())
                 var tempDate = new Date(snapshot.val());
                 if (tempDate < minTime) {
-                  var isFit;
-                  // await db.ref(`/genders/${temps[i]}`).once("value",snapshot=>{
-                  //   console.log("snv", snapshot.val())
-                  //   console.log("ti", temps[i]);
-                  //   if(snapshot.val().interestedIn!=currentUserGenderData.gender){
-                  //     isFit = false;
-                  //   }
-                  // })
-                  // if(isFit){
-                  minTime = tempDate;
-                  chosenTempId = temps[i];
-                  // }
+                  var isFit = false;
+                  // await db
+                  //   .ref(`/genders/${temps[i]}/gender`)
+                  //   .once("value", (snapshot) => {
+                  //     if (snapshot.val() === currentUserGenderData.gender || snapshot.val() === "Both") {
+                  //       console.log("cug", currentUserGenderData.gender);
+                  //       console.log("ug", snapshot.val());
+                  //       isFit = true;
+                  //     }
+                  //   });
+                  if (permis.indexOf(temps[i]) < 0) {
+                    minTime = tempDate;
+                    chosenTempId = temps[i];
+                  }
                 }
               }
-              // dbRef.off()
             });
           }
           if (chosenTempId) break;
@@ -117,9 +142,31 @@ export const changeCurrentUserMatchingStatus = (status) => {
         }
       }
     }
-    var o = {};
-    o[currentUser.uid] = status;
-    await db.ref(`/matchingStatus`).update(o);
+    if (status == 3) {
+      const tempId = getState().temps.tempId;
+      const dbRef = db.ref("/matchingStatus").child(tempId);
+      dbRef.off();
+      dbRef.on("value", async (snapshot) => {
+        if (snapshot.val() == 3) {
+          db.ref("/matches")
+            .child(currentUser.uid)
+            .child(tempId)
+            .set(new Date().toISOString());
+          if (currentUser.uid < tempId) {
+            const refString = `${currentUser.uid}@${tempId}`;
+            const oldRef = db.ref(`/tempMessages/${refString}`);
+            const newRef = db.ref(`/messages/${refString}`);
+            await oldRef.once("value", async (snapshot) => {
+              newRef.set(snapshot.val());
+            });
+          }
+          dbRef.off();
+          status = -1;
+          await db.ref(`/matchingStatus`).child(currentUser.uid).set(-1);
+        }
+      });
+    }
+    await db.ref(`/matchingStatus`).child(currentUser.uid).set(status);
   };
 };
 
@@ -133,9 +180,7 @@ export const createTempChatRoom = (tempId) => {
     db.ref(`/tempRooms`).update(obj);
     db.ref(`/waitingUsers/${tempId}`).remove();
     db.ref(`/waitingUsers/${currentUser.uid}`).remove();
-    let o = {};
-    o[tempId] = 2;
-    db.ref(`/matchingStatus`).update(o);
+    db.ref(`/matchingStatus`).child(tempId).set(2);
   };
 };
 
@@ -146,8 +191,7 @@ export const fetchTempChatRoom = () => {
     const dbRef = db.ref(`/tempRooms/${currentUser.uid}`);
     let tempId;
     dbRef.off();
-    dbRef
-      .on("value", (snapshot) => {
+    dbRef.on("value", (snapshot) => {
       tempId = snapshot.val();
       dispatch({ type: FETCH_TEMP_CHAT_ROOM, data: tempId });
     });
@@ -179,10 +223,30 @@ export const skipThisTemp = () => {
   return async (dispatch, getState) => {
     const db = firebase.database();
     const tempId = getState().temps.tempId;
+    const currentUser = getState().auth.user;
     console.log("stp", tempId);
     await db.ref("/tempRooms").child(tempId).remove();
     const date = new Date();
-    await db.ref(`/waitingUsers`).child(tempId).set(date);
+    await db.ref(`/waitingUsers`).child(tempId).set(date.toISOString());
     await db.ref(`/matchingStatus`).child(tempId).set(-1);
+    const chatId =
+      currentUser.uid < tempId
+        ? `${currentUser.uid}@${tempId}`
+        : `${tempId}@${currentUser.uid}`;
+    db.ref(`/tempMessages/${chatId}`).off();
+    await db.ref(`/tempMessages/${chatId}`).remove();
+  };
+};
+
+export const stopListeningToChat = () => {
+  return async (dispatch, getState) => {
+    const db = firebase.database();
+    const tempId = getState().temps.tempId;
+    const currentUser = getState().auth.user;
+    const chatId =
+      currentUser.uid < tempId
+        ? `${currentUser.uid}@${tempId}`
+        : `${tempId}@${currentUser.uid}`;
+    db.ref(`/tempMessages/${chatId}`).off();
   };
 };

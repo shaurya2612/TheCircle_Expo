@@ -139,11 +139,20 @@ const Form = (props) => {
               : "Both",
         });
     } else {
-      await firebase.database().ref("genders").child(user.uid).set({
-        gender: gender,
-        genderIdentity: gender,
-        interestedIn: interestedIn,
-      });
+      await firebase
+        .database()
+        .ref("genders")
+        .child(user.uid)
+        .set({
+          gender: gender,
+          genderIdentity: gender,
+          interestedIn:
+            interestedIn === "Men"
+              ? "Male"
+              : interestedIn === "Women"
+              ? "Female"
+              : "Both",
+        });
     }
     const storage = firebase.storage();
     const uri = pickedImage;

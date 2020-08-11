@@ -11,6 +11,9 @@ const ChatScreen = (props) => {
   const user = props.route.params.user;
   const currentUser = useSelector((state) => state.auth.user);
   const messages = useSelector((state) => state.messages.messages);
+
+  console.log("User", user);
+  console.log("CurrentUser", currentUser);
   // const messages = [
   //   {
   //     _id: "110ae769-51a2-468b-a72b-a528037ad884",
@@ -78,7 +81,7 @@ const ChatScreen = (props) => {
       user={{
         _id: currentUser.uid,
         name: currentUser.displayName,
-        avatar: "https://placeimg.com/140/140/any",
+        avatar: currentUser.photoURL,
       }}
       messages={messages}
       renderAvatarOnTop={true}

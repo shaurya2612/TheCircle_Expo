@@ -91,7 +91,7 @@ console.log(images);
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.accent },
+  root: { flex: 1, backgroundColor: Colors.darkbg },
 });
 
 export default CurrentUserProfileScreen;

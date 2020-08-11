@@ -70,6 +70,7 @@ const EditCurrentUserProfileScreen = (props) => {
               type="feather"
               size={30}
               name="check"
+              color={Colors.accent}
             />
           </TouchableOpacity>
         );
@@ -78,7 +79,7 @@ const EditCurrentUserProfileScreen = (props) => {
   });
 
   return (
-    <ScrollView scrollEnabled={!isDragging}>
+    <ScrollView style={{backgroundColor:Colors.darkbg}} scrollEnabled={!isDragging}>
       {/* <PhotoSelector
         images={userImages}
         onChangeImage={setUserImages}
