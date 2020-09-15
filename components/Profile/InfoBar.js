@@ -10,7 +10,6 @@ const InfoBar = (props) => {
   const name = user.name.split(" ")[0];
   return (
     <View style={styles.root}>
-      <LinearHorizontalGradient height={props.height} />
       <View style={{ padding: 5 }}>
         <Text style={styles.infoBarText}>{name}</Text>
       </View>
@@ -28,7 +27,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     justifyContent: "space-between",
     padding: 10,
-    borderBottomWidth: 2,
+    // borderBottomWidth: 2,
+    borderBottomColor:"white",
+    borderRadius:20
   },
   infoBarText: {
     color: Colors.accent,

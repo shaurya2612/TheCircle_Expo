@@ -13,37 +13,70 @@ import InfoBar from "../components/Profile/InfoBar";
 import HorizontalScrollCard from "../components/Profile/HorizontalScrollCard";
 import OnLayout from "react-native-on-layout";
 import TextCard from "../components/Profile/TextCard";
-import ProfileActionButton from "../components/Profile/ProfileActionButton";
+import IconCards from "../components/Profile/IconCards";
+
 
 const CurrentUserProfileScreen = (props) => {
   const images = useSelector((state) => state.tempStorage.currentUserImages);
-  const profileData = useSelector((state) => state.tempStorage.currentUserProfileData);
+  const profileData = useSelector(
+    (state) => state.tempStorage.currentUserProfileData
+  );
+  const imagesOrder = useSelector(
+    (state) => state.tempStorage.currentUserImagesOrder
+  );
   const [imagesAreLoading, setImagesAreLoading] = useState(true);
   const [profileIsLoading, setProfileIsLoading] = useState(true);
-  const user = useSelector(state=>state.tempStorage.currentUser);
+  const user = useSelector((state) => state.tempStorage.currentUser);
+  const imagesUploaded = useSelector(state => state.loading.currentUserImagesUpdated);
   const dispatch = useDispatch();
 
   const fetchImages = async () => {
     dispatch(tempStorageActions.fetchCurrentUserImages());
   };
 
+  const fetchImagesOrder = async () => {
+    dispatch(tempStorageActions.fetchCurrentUserImagesOrder());
+  };
+
+  const goToEditProfileScreen = () => {
+    props.navigation.navigate("EditCurrentUserProfileScreen", {
+      profileData: profileData,
+    });
+  };
+
   const fetchUserProfileData = async () => {
     dispatch(tempStorageActions.fetchCurrentUserProfileData());
   };
-console.log(images);
+
+  console.log("pd", profileData);
+
   useEffect(() => {
     setImagesAreLoading(true);
     setProfileIsLoading(true);
-    Promise.all([fetchImages(), fetchUserProfileData()]).then(() => {
-      setImagesAreLoading(false);
-      setProfileIsLoading(false);
+    fetchImagesOrder().then(() => {
+      console.log(imagesOrder);
+      Promise.all([fetchImagesOrder(), fetchUserProfileData()]).then(() => {
+        setProfileIsLoading(false);
+      });
     });
   }, [user]);
+
+  useEffect(() => {
+    props.navigation.setParams({
+      goToEditProfileScreen: goToEditProfileScreen,
+    });
+  }, [profileData]);
+
+  useEffect(() => {
+    setImagesAreLoading(true);
+    if (imagesOrder && imagesUploaded) fetchImages();
+    setImagesAreLoading(false);
+  }, [imagesOrder, imagesUploaded]);
 
   return (
     <View style={styles.root}>
       <View style={{ height: 300, backgroundColor: "white" }}>
-        {imagesAreLoading ? (
+        {imagesAreLoading || !imagesUploaded ? (
           <Center>
             <ActivityIndicator size={"large"} color={Colors.primary} />
           </Center>
@@ -55,7 +88,7 @@ console.log(images);
               height: 11,
               borderRadius: 10,
             }}
-            dotColor={Colors.gradient}
+            dotColor={Colors.primary}
             images={images}
             resizeMethod={"resize"}
             resizeMode={"cover"}
@@ -69,29 +102,36 @@ console.log(images);
               paddingVertical: 10,
             }}
             imageLoadingColor={Colors.primary}
+            circleLoop={true}
           />
         )}
       </View>
-      <ScrollView style={{ flex: 1 }}>
-        <OnLayout>
-          {({ width, height }) => <InfoBar user={user} height={height} />}
-        </OnLayout>
-        {profileIsLoading ? (
-          <ActivityIndicator size="large" color={Colors.primary} />
-        ) : !profileData.null ? (
-          <View>
-            {profileData.about ? <TextCard text={profileData.about} /> : null}
-            {profileData.cardImages ? <HorizontalScrollCard /> : null}
-          </View>
-        ) : <Center><Text>This person is too introverted! :o</Text></Center>}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ flex: 1 }}>
+          <OnLayout>
+            {({ width, height }) => <InfoBar user={user} height={height} />}
+          </OnLayout>
+          {profileIsLoading ? (
+            <Center style={{ backgroundColor: "blue" }}>
+              <ActivityIndicator size="large" color={Colors.primary} />
+            </Center>
+          ) : !profileData.null ? (
+            <View>
+              {profileData.about ? <TextCard text={profileData.about} /> : null}
+              {profileData.cardImages ? <HorizontalScrollCard /> : null}
+            </View>
+          ) : (
+            <Text>This person is too introverted :O</Text>
+          )}
+          {profileData.cards ? <IconCards cards={profileData.cards} /> : null}
+        </View>
       </ScrollView>
-      <ProfileActionButton {...props} profileData={profileData} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.darkbg },
+  root: { flex: 1, backgroundColor: Colors.primary },
 });
 
 export default CurrentUserProfileScreen;

@@ -13,9 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 const PhotoSelector = (props) => {
   const dispatch = useDispatch();
   const id = useSelector((state) => state.auth.user.uid);
-  const previousOrder = useSelector((state) => state.storage.imagesOrder);
+  const previousOrder = useSelector((state) => state.tempstorage.currentUserImagesOrder);
   const [order, setOrder] = useState(
-    useSelector((state) => state.storage.imagesOrder)
+    useSelector((state) => state.tempstorage.imagesOrder)
   );
   const [images, setImages] = useState(useSelector(state=>state.storage.images));
   const [imageDragging, setImageDragging] = useState(false);

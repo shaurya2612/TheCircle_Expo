@@ -9,13 +9,14 @@ import {
   ActivityIndicator,
   ScrollView,
   Platform,
+  Text
 } from "react-native";
 import { Field, reduxForm } from "redux-form";
 import Colors from "../constants/Colors";
-import { Text, Image } from "native-base";
+import { Image } from "native-base";
 import * as AuthActions from "../store/actions/auth";
 import { useDispatch, useSelector } from "react-redux";
-import firebase from "firebase";
+import firebase, { database } from "firebase";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ModalDropdown from "react-native-modal-dropdown";
 import { Icon } from "react-native-elements";
@@ -23,6 +24,9 @@ import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import PhotoCard from "./PhotoCard";
 import SignupFormPhoto from "./SignupFormPhoto";
+import * as tempStorageActions from '../store/actions/tempStorage';
+import HeaderText from "./HeaderText";
+import FormText from "./Form/FormText";
 
 const renderInput = ({ input: { onChange, ...input }, ...rest }) => {
   return (
@@ -71,6 +75,7 @@ const Form = (props) => {
   const [interestedIn, setInterestedIn] = useState("Select");
   const [gender, setGender] = useState("Select");
   const [pickedImage, setPickedImage] = useState();
+  const dispatch = useDispatch();
 
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -156,7 +161,6 @@ const Form = (props) => {
     }
     const storage = firebase.storage();
     const uri = pickedImage;
-    const filename = uri.substring(uri.lastIndexOf("/") + 1);
     const uploadUri = Platform.OS === "ios" ? uri.replace("file://", "") : uri;
     const response = await fetch(uploadUri);
     const blob = await response.blob();
@@ -177,6 +181,7 @@ const Form = (props) => {
         displayPicture: dpUrl,
       });
 
+  
     firebase.auth().currentUser.updateProfile({
       photoURL: dpUrl,
     });
@@ -185,6 +190,7 @@ const Form = (props) => {
     obj[user.uid] = 0;
     await firebase.database().ref("/matchingStatus").update(obj);
 
+    dispatch(tempStorageActions.fetchCurrentUserGender())    
     setIsLoading(false);
   };
 
@@ -228,28 +234,30 @@ const Form = (props) => {
               }}
               style={styles.button}
             >
-              <Text style={{ color: Colors.accent }}>Select Birth Date</Text>
+              <FormText style={{ color: Colors.accent }}>Select Birth Date</FormText>
             </TouchableOpacity>
-            <Text style={{ color: Colors.primary, marginHorizontal: 1 }}>
+            <FormText style={{ color: Colors.primary }}>
               {birthDate
                 ? birthDate.getDate().toString() +
                   "/" +
                   (birthDate.getMonth() + 1).toString() +
                   "/" +
-                  birthDate.getFullYear().toString() +
-                  "\t \t Age:" +
-                  age
+                  birthDate.getFullYear().toString()
+                  //  +
+                  // "\t \t Age:" +
+                  // age
                 : null}
-            </Text>
+            </FormText>
           </View>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "space-evenly",
+              flexWrap: "wrap"
             }}
           >
-            <Text style={{ color: Colors.primary }}>{"I am :\t"}</Text>
+            <HeaderText style={{ color: Colors.primary , fontSize:20}}>{"I am \t"}</HeaderText>
             <ModalDropdown
               style={{ ...styles.button, width: "35%" }}
               textStyle={{ color: Colors.accent }}
@@ -262,9 +270,9 @@ const Form = (props) => {
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ color: Colors.accent }}>
+              <FormText style={{ color: Colors.accent }}>
                   {moreSelected ? "More" : gender}
-                </Text>
+                </FormText>
                 <Icon
                   name="chevron-down"
                   type="feather"
@@ -292,12 +300,13 @@ const Form = (props) => {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-between",
+              justifyContent: "space-evenly",
+              flexWrap:"wrap"
             }}
           >
-            <Text style={{ color: Colors.primary }}>
-              {"I am interested in :"}
-            </Text>
+            <HeaderText style={{ color: Colors.primary, fontSize:20 }}>
+              {"Interested In "}
+            </HeaderText>
             <ModalDropdown
               style={{ ...styles.button, width: "35%" }}
               textStyle={{ color: Colors.accent }}
@@ -307,7 +316,7 @@ const Form = (props) => {
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={{ color: Colors.accent }}>{interestedIn}</Text>
+              <FormText style={{ color: Colors.accent }}>{interestedIn}</FormText>
                 <Icon
                   name="chevron-down"
                   type="feather"
@@ -324,12 +333,13 @@ const Form = (props) => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: "space-evenly",
+                flexWrap:"wrap"
               }}
             >
-              <Text style={{ color: Colors.primary }}>
-                {"Show me in the search for :"}
-              </Text>
+              <HeaderText style={{ color: Colors.primary , fontSize:20}}>
+                {"Show me in the search for "}
+              </HeaderText>
               <ModalDropdown
                 style={{ ...styles.button, width: "35%" }}
                 textStyle={{ color: Colors.accent }}
@@ -339,9 +349,9 @@ const Form = (props) => {
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <Text style={{ color: Colors.accent }}>
+                <FormText style={{ color: Colors.accent }}>
                     {gender == "More" ? "Select" : gender}
-                  </Text>
+                  </FormText>
                   <Icon
                     name="chevron-down"
                     type="feather"
@@ -381,23 +391,24 @@ const Form = (props) => {
 
           <View
             style={{
-              justifyContent: "space-between",
+              justifyContent: "space-evenly",
               flexDirection: "row",
               alignItems: "center",
+              flexWrap:"wrap",
               marginVertical: 10,
             }}
           >
             {pickedImage ? (
               <SignupFormPhoto image={pickedImage} />
             ) : (
-              <Text>Pick a Profile Picture</Text>
+              <HeaderText style={{ color: Colors.primary, fontSize:20 }}>Profile Picture</HeaderText>
             )}
 
             <TouchableOpacity
               style={{ ...styles.button, paddingHorizontal: 0 }}
               onPress={takeImageHandler}
             >
-              <Text style={{ color: Colors.accent }}>Choose Image</Text>
+              <FormText style={{ color: Colors.accent }}>Choose</FormText>
             </TouchableOpacity>
           </View>
 
@@ -409,7 +420,7 @@ const Form = (props) => {
                 style={styles.button}
                 onPress={handleSubmit((values) => submitHandler(values))}
               >
-                <Text style={{ color: Colors.accent }}>Submit</Text>
+                <FormText style={{ color: Colors.accent }}>Submit</FormText>
               </TouchableOpacity>
             </View>
           )}
@@ -446,7 +457,7 @@ const Form = (props) => {
                     }}
                     style={styles.button}
                   >
-                    <Text style={{ color: Colors.accent }}>Okay</Text>
+                    <FormText style={{ color: Colors.accent }}>Okay</FormText>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -460,17 +471,18 @@ const Form = (props) => {
 
 const styles = StyleSheet.create({
   root: {
-    paddingHorizontal: 32,
-    paddingVertical: 30,
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     justifyContent: "center",
-    marginVertical: 20,
+    backgroundColor: Colors.primary,
   },
   input: {
     padding: 15,
     marginBottom: 8,
     borderColor: Colors.primary,
-    borderWidth: 1,
-    borderRadius: 50,
+    borderWidth: 2,
+    borderRadius: 25,
     marginVertical: 20,
     marginHorizontal: 20,
     backgroundColor: Colors.accent,
@@ -490,13 +502,12 @@ const styles = StyleSheet.create({
   },
   birthDateContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
   },
   card: {
     backgroundColor: Colors.accent,
-    paddingVertical: 25,
-    paddingHorizontal: 10,
+    padding: 8,
     borderWidth: 1,
     borderColor: Colors.primary,
     borderRadius: 20,

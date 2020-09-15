@@ -25,6 +25,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
     const currentUserGenderData = getState().tempStorage.currentUserGender;
     const db = firebase.database();
 
+
     if (status == 0) {
       db.ref("/tempRooms").child(currentUser.uid).remove();
       db.ref("/waitingUsers").child(currentUser.uid).remove();
@@ -49,20 +50,20 @@ export const changeCurrentUserMatchingStatus = (status) => {
       if (hasPermis) {
         while (permis.length > 0) {
           const randomPermiIndex = Math.floor(
-            Math.random() * (permis.length - 0) + 0
+            Math.random() * (permis.length) // selected a random index for permi from array of all permis
           );
           console.log("PEMIS", permis);
           console.log("RAND YAHA", randomPermiIndex);
-          const chosenPermiId = permis[randomPermiIndex];
+          const chosenPermiId = permis[randomPermiIndex];  //choosed the permi
           let temps = [];
           let hasPotentialMatches;
-          if (currentUser.interestedIn != "Both") {
+          if (currentUser.interestedIn != "Both") { //interested in either male or female
             await db
               .ref(`/permis/${chosenPermiId}`)
               .orderByValue()
-              .equalTo(currentUserGenderData.interestedIn)
+              .equalTo(currentUserGenderData.interestedIn)  //queried data so that only male/female temps are fetched
               .once("value", (snapshot) => {
-                if (snapshot.exists()) {
+                if (snapshot.exists()) {                    //checked if the permi even has some permis of its own
                   temps = Object.keys(snapshot.val());
                   console.log("temps", temps);
                   if (temps.indexOf(currentUser.uid) >= 0) {
@@ -72,7 +73,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
                 } else {
                   hasPotentialMatches = false;
                   console.log("no potential");
-                  permis.splice(randomPermiIndex, 1);
+                  permis.splice(randomPermiIndex, 1);       // check for some other permi
                 }
               });
 
@@ -103,9 +104,8 @@ export const changeCurrentUserMatchingStatus = (status) => {
           for (var i = 0; i < temps.length; i++) {
             const dbRef = db.ref(`/waitingUsers/${temps[i]}`);
             await dbRef.once("value", async (snapshot) => {
-              if (snapshot.exists()) {
-                // console.log("YAHA", snapshot.val())
-                var tempDate = new Date(snapshot.val());
+              if (snapshot.exists()) {      //chosen temp is in waiting list or not 
+                var tempDate = new Date(snapshot.val());    //checking for the latest temp in waiting list
                 if (tempDate < minTime) {
                   var isFit = false;
                   // await db

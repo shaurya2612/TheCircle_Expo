@@ -36,9 +36,11 @@ import {
   defaultStackHeaderOptions,
   editScreenHeaderOption,
   defaultIOSHeaderOptions,
+  CurrentUserProfileScreenHeaderOptions
 } from "./HeaderOptions";
 import TempRoom from "../screens/TempMatching/TempRoom";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AddCardScreen from "../screens/AddCardScreen";
 
 const AuthStack = createStackNavigator();
 const AuthNavigator = () => {
@@ -309,13 +311,18 @@ const CurrentUserProfileStackNavigator = () => {
         name={"CurrentUserProfileScreen"}
         component={CurrentUserProfileScreen}
         options={
-          Platform.OS === "ios" ? defaultIOSHeaderOptions : defaultHeaderOptions
+          CurrentUserProfileScreenHeaderOptions
         }
       />
       <CurrentUserProfileStack.Screen
         name={"EditCurrentUserProfileScreen"}
         component={EditCurrentUserProfileScreen}
         options={editScreenHeaderOption}
+      />
+      <CurrentUserProfileStack.Screen
+      name={"AddCardScreen"}
+      component={AddCardScreen}
+      options={defaultStackHeaderOptions}
       />
     </CurrentUserProfileStack.Navigator>
   );

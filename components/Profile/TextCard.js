@@ -26,9 +26,9 @@ const TextCard = (props) => {
         <View>
           <Text
             style={{
-              color: Colors.darkText,
+              color: Colors.primary,
               fontFamily: "Quicksand",
-              fontSize: 15,
+              fontSize: 17,
             }}
           >
             {text}
@@ -49,6 +49,8 @@ const styles = StyleSheet.create({
     padding: 60,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor:"white",
+    borderRadius: 25,
   },
   textCardContainer: {
     justifyContent: "center",

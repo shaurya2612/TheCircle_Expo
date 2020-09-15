@@ -10,11 +10,10 @@ import {
 } from "react-native";
 import { Field, reduxForm } from "redux-form";
 import Colors from "../constants/Colors";
-import { Text } from "native-base";
 import firebase from "firebase";
 import ModalDropdown from "react-native-modal-dropdown";
 import { Icon } from "react-native-elements";
-
+import FormText from "./Form/FormText";
 
 const renderInput = ({ input: { onChange, ...input }, ...rest }) => {
   return (
@@ -47,42 +46,45 @@ const Form = (props) => {
     }
   });
 
-  
   return (
     <View style={styles.root}>
       <View style={styles.card}>
         <View style={styles.dropdownContainer}>
-          <ModalDropdown
-            style={{ ...styles.button, width: "35%" }}
-            textStyle={{ color: Colors.accent }}
-            options={countries}
-            onSelect={(item) => {
-              setCountry(countries[item][0]);
-              setCountryCode(countries[item][1]);
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={{ color: Colors.accent }}>{country}</Text>
-              <Icon
-                name="chevron-down"
-                type="feather"
-                color={Colors.accent}
-                size={10}
-                style={{ marginHorizontal: 1 }}
-              />
-            </View>
-          </ModalDropdown>
-          <Field
-            name={"phoneNumber"}
-            props={{
-              placeholder: "Phone Number",
-            }}
-            
-            autoCompleteType="tel"
-            keyboardType="phone-pad"
-            textContentType="telephoneNumber"
-            component={renderInput}
-          />
+          <View style={{flex:1, flexDirection:"row", justifyContent:"center"}}>
+            <ModalDropdown
+              style={{ ...styles.button, width: "100%" }}
+              textStyle={{ ...styles.formText, color: Colors.primary }}
+              options={countries}
+              onSelect={(item) => {
+                setCountry(countries[item][0]);
+                setCountryCode(countries[item][1]);
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <FormText style={{fontSize:14}}>{country}</FormText>
+                <Icon
+                  name="chevron-down"
+                  type="feather"
+                  color={Colors.accent}
+                  size={15}
+                  style={{ marginHorizontal: 1 }}
+                />
+              </View>
+            </ModalDropdown>
+          </View>
+          <View style={{flex:2}}>
+            <Field
+              name={"phoneNumber"}
+              props={{
+                placeholder: "Phone Number",
+              }}
+              // style={{}}
+              autoCompleteType="tel"
+              keyboardType="phone-pad"
+              textContentType="telephoneNumber"
+              component={renderInput}
+            />
+          </View>
         </View>
         <Field
           name={"password"}
@@ -90,7 +92,6 @@ const Form = (props) => {
             placeholder: "Password",
             secureTextEntry: true,
           }}
-          
           component={renderInput}
         />
         {isLoading ? (
@@ -108,14 +109,14 @@ const Form = (props) => {
                   );
               })}
             >
-              <Text style={{ color: Colors.accent }}>Login</Text>
+              <FormText style={styles.formText}>Login</FormText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
                 props.navigation.navigate("PhoneAuth");
               }}
             >
-              <Text style={{ color: Colors.primary }}>Sign up</Text>
+              <FormText style={{ color: Colors.primary }}>Sign up</FormText>
             </TouchableOpacity>
           </View>
         )}
@@ -127,16 +128,16 @@ const Form = (props) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    padding: 32,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    padding:8
     // backgroundColor: Colors.primary
   },
   input: {
     padding: 15,
     marginBottom: 8,
     borderColor: Colors.primary,
-    borderWidth: 1,
-    borderRadius: 50,
+    borderWidth: 2,
+    borderRadius: 25,
     marginVertical: 20,
     marginHorizontal: 20,
     backgroundColor: Colors.accent,
@@ -168,6 +169,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primary,
     borderRadius: 20,
+    padding: 8
   },
 });
 
