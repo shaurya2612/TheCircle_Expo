@@ -25,7 +25,6 @@ export const changeCurrentUserMatchingStatus = (status) => {
     const currentUserGenderData = getState().tempStorage.currentUserGender;
     const db = firebase.database();
 
-
     if (status == 0) {
       db.ref("/tempRooms").child(currentUser.uid).remove();
       db.ref("/waitingUsers").child(currentUser.uid).remove();
@@ -50,20 +49,22 @@ export const changeCurrentUserMatchingStatus = (status) => {
       if (hasPermis) {
         while (permis.length > 0) {
           const randomPermiIndex = Math.floor(
-            Math.random() * (permis.length) // selected a random index for permi from array of all permis
+            Math.random() * permis.length // selected a random index for permi from array of all permis
           );
           console.log("PEMIS", permis);
           console.log("RAND YAHA", randomPermiIndex);
-          const chosenPermiId = permis[randomPermiIndex];  //choosed the permi
+          const chosenPermiId = permis[randomPermiIndex]; //choosed the permi
           let temps = [];
           let hasPotentialMatches;
-          if (currentUser.interestedIn != "Both") { //interested in either male or female
+          if (currentUser.interestedIn != "Both") {
+            //interested in either male or female
             await db
               .ref(`/permis/${chosenPermiId}`)
               .orderByValue()
-              .equalTo(currentUserGenderData.interestedIn)  //queried data so that only male/female temps are fetched
+              .equalTo(currentUserGenderData.interestedIn) //queried data so that only male/female temps are fetched
               .once("value", (snapshot) => {
-                if (snapshot.exists()) {                    //checked if the permi even has some permis of its own
+                if (snapshot.exists()) {
+                  //checked if the permi even has some permis of its own
                   temps = Object.keys(snapshot.val());
                   console.log("temps", temps);
                   if (temps.indexOf(currentUser.uid) >= 0) {
@@ -73,7 +74,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
                 } else {
                   hasPotentialMatches = false;
                   console.log("no potential");
-                  permis.splice(randomPermiIndex, 1);       // check for some other permi
+                  permis.splice(randomPermiIndex, 1); // check for some other permi
                 }
               });
 
@@ -104,20 +105,28 @@ export const changeCurrentUserMatchingStatus = (status) => {
           for (var i = 0; i < temps.length; i++) {
             const dbRef = db.ref(`/waitingUsers/${temps[i]}`);
             await dbRef.once("value", async (snapshot) => {
-              if (snapshot.exists()) {      //chosen temp is in waiting list or not 
-                var tempDate = new Date(snapshot.val());    //checking for the latest temp in waiting list
+              if (snapshot.exists()) {
+                //chosen temp is in waiting list or not
+                let tempDate = new Date(snapshot.val().split(" ")[0]); //checking for the latest temp in waiting list
+                let tempInterestedIn = snapshot.val().split(" ")[1]; // interestedin for temp
+                console.log("testing here", tempInterestedIn);
+                console.log("cugd", currentUserGenderData.gender);
                 if (tempDate < minTime) {
                   var isFit = false;
-                  // await db
-                  //   .ref(`/genders/${temps[i]}/gender`)
-                  //   .once("value", (snapshot) => {
-                  //     if (snapshot.val() === currentUserGenderData.gender || snapshot.val() === "Both") {
-                  //       console.log("cug", currentUserGenderData.gender);
-                  //       console.log("ug", snapshot.val());
-                  //       isFit = true;
-                  //     }
-                  //   });
-                  if (permis.indexOf(temps[i]) < 0) {
+                  if (
+                    tempInterestedIn == currentUserGenderData.gender ||
+                    tempInterestedIn == "Both"
+                  ) {
+                    const matchesRef = db.ref(
+                      `/matches/${currentUser.uid}/${temps[i]}`
+                    );
+                    matchesRef.on("value", (snapshot) => {
+                      if (!snapshot.exists()) isFit = true;
+                      matchesRef.off();
+                    });
+                  }
+                  if (permis.indexOf(temps[i]) < 0 && isFit) {
+                    //temp is not in permi list of current User and isFit
                     minTime = tempDate;
                     chosenTempId = temps[i];
                   }
@@ -137,7 +146,9 @@ export const changeCurrentUserMatchingStatus = (status) => {
           status = 2;
         } else {
           obj = {};
-          obj[currentUser.uid] = new Date().toISOString();
+          obj[currentUser.uid] = `${new Date().toISOString()} ${
+            currentUserGenderData.interestedIn
+          }`;
           db.ref("/waitingUsers").update(obj);
         }
       }
@@ -159,6 +170,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
             await oldRef.once("value", async (snapshot) => {
               newRef.set(snapshot.val());
             });
+            await oldRef.remove();
           }
           dbRef.off();
           status = -1;
@@ -248,5 +260,21 @@ export const stopListeningToChat = () => {
         ? `${currentUser.uid}@${tempId}`
         : `${tempId}@${currentUser.uid}`;
     db.ref(`/tempMessages/${chatId}`).off();
+  };
+};
+
+export const removeMatch = (idToBeRemoved) => {
+  return async (dispatch, getState) => {
+    const uid = getState().auth.user.uid;
+    const db = firebase.database();
+    let dbRef = db.ref(`/matches/${uid}`);
+    await dbRef.child(idToBeRemoved).remove();
+    dbRef = db.ref(`/matches/${idToBeRemoved}`);
+    await dbRef.child(uid).remove();
+    var refString =
+      uid < idToBeRemoved
+        ? uid + "@" + idToBeRemoved
+        : idToBeRemoved + "@" + uid;
+    await db.ref(`/messages/${refString}`).remove();
   };
 };

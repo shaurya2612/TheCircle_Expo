@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Text, TouchableHighlight } from "react-native";
 import SortableGrid from "react-native-sortable-grid";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +6,7 @@ import Colors from "../../constants/Colors";
 import PhotoCard from "../PhotoCard";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
-import * as tempStorageActions from '../../store/actions/tempStorage';
+import * as tempStorageActions from "../../store/actions/tempStorage";
 const verifyPermissions = async () => {
   const result = await Permissions.askAsync(Permissions.CAMERA_ROLL);
   if (result.status != "granted") {
@@ -21,23 +21,31 @@ const verifyPermissions = async () => {
 
 /// Main Component
 const TempPhotoSelector = (props) => {
+  
   const fetchedImages = useSelector(
     (state) => state.tempStorage.currentUserImages
   );
   const fetchedImagesOrder = useSelector(
     (state) => state.tempStorage.currentUserImagesOrder
   );
+  const [imagesObject, setImagesObject] = useState(null);
   const [images, setImages] = useState(
     useSelector((state) => state.tempStorage.currentUserImages)
   );
-
   const [imagesOrder, setImagesOrder] = useState(
     useSelector((state) => state.tempStorage.currentUserImagesOrder)
   );
-
   const dispatch = useDispatch();
-    
   const Grid = useRef("SortableGrid");
+
+  // useEffect(() => {
+  //   let obj = {};
+
+  //   for (var i = 0; i < fetchedImagesOrder.length; i++) {
+  //     obj[fetchedImagesOrder[i]] = fetchedImages[i];
+  //   }
+  //   setImagesObject(obj);
+  // }, [fetchedImages, fetchedImagesOrder]);
 
   props.changeImagesOrder(imagesOrder);
   props.changeImages(images);
@@ -88,10 +96,16 @@ const TempPhotoSelector = (props) => {
         <Text style={styles.headerStyle}>Images:</Text>
         <TouchableHighlight
           onPress={async () => {
-            await takeImageHandler();
+            if (images.length < 6) await takeImageHandler();
+            else {
+              const res = Grid.current.toggleDeleteMode();
+              if (!res.deleteModeOn) Grid.current.toggleDeleteMode();
+            }
           }}
         >
-          <Text style={styles.subHeaderStyle}>Add More +</Text>
+          <Text style={styles.subHeaderStyle}>
+            {images.length == 6 ? "Delete Some -" : "Add More +"}
+          </Text>
         </TouchableHighlight>
       </View>
       <SortableGrid
@@ -123,18 +137,28 @@ const TempPhotoSelector = (props) => {
         onDeleteItem={(item) => {
           props.onDrag(true);
           var keyToBeDeleted = item.item.key;
-          dispatch(tempStorageActions.deleteImage(keyToBeDeleted));
-          setImagesOrder((prevImagesOrder)=>{
-            var newImagesOrder = []
-            for(var i = 0; i< prevImagesOrder.length; i++){
-              if(prevImagesOrder[i]==keyToBeDeleted){
+          
+          
+          setImagesOrder((prevImagesOrder) => {
+            var newImagesOrder = [];
+            for (var i = 0; i < prevImagesOrder.length; i++) {
+              if (prevImagesOrder[i] == keyToBeDeleted) {
                 newImagesOrder = prevImagesOrder.splice(i, 1);
               }
             }
             return newImagesOrder;
-          })
-        }} 
-        
+          });
+
+          // console.log("here", images);
+          // const imageUriToBeDeleted = imagesObject[keyToBeDeleted];
+          // setImages((prevImages) => {
+          //   for (var i = 0; i < prevImages.length; i++) {
+          //     if (prevImages == imageUriToBeDeleted) {
+          //       return prevImages.splice(i, 1);
+          //     }
+          //   }
+          // });
+        }}
       >
         {images.map((letter, index) => (
           <View

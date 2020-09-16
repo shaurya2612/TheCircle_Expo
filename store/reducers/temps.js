@@ -10,7 +10,6 @@ export default (state = initialState, action) => {
     case FETCH_CURRENT_USER_MATCHING_STATUS: 
       return { ...state, currentUserMatchingStatus: action.data };
     case FETCH_TEMP_CHAT_ROOM:
-      console.log("fire toh ho raha hai")
       return {...state, tempId:action.data}
     default:
       return state;

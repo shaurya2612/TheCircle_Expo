@@ -9,12 +9,12 @@ import * as tempStorageActions from "../../store/actions/tempStorage";
 import { Text, Icon } from "react-native-elements";
 import TempChat from "../../components/TempChat";
 import Modal from "react-native-modal";
-import firebase from 'firebase'
+import firebase from "firebase";
 
 const TempRoom = (props) => {
   const [acceptButtonPressed, setAcceptButtonPressed] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const temp = useSelector(state=>state.temps.tempId);
+  const temp = useSelector((state) => state.temps.tempId);
 
   const currentUserDisplayImage = useSelector(
     (state) => state.tempStorage.currentUser.displayPicture
@@ -47,9 +47,11 @@ const TempRoom = (props) => {
   useEffect(() => {
     if (currentUserMatchingStatus == 2) {
       dispatch(tempActions.fetchTempChatRoom());
+      setAcceptButtonPressed(false);
     }
     if (currentUserMatchingStatus == -1) {
       changeCurrentUserMatchingStatus(1);
+      setIsModalVisible(false);
     }
   }, [currentUserMatchingStatus]);
 
@@ -123,11 +125,12 @@ const TempRoom = (props) => {
                   stopAccepting();
                 } else {
                   changeCurrentUserMatchingStatus(3);
+                  setIsModalVisible(false);
                 }
                 setAcceptButtonPressed((prev) => !prev);
               }}
               containerStyle={{
-                backgroundColor: acceptButtonPressed?"grey":"black",
+                backgroundColor: acceptButtonPressed ? "grey" : "black",
                 padding: 15,
                 borderRadius: 50,
               }}

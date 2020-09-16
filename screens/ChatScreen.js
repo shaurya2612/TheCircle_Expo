@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import Colors from "../constants/Colors";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import { useSelector, useDispatch } from "react-redux";
 import * as messageActions from "../store/actions/messages";
+import { Icon } from "react-native-elements";
+import * as tempActions from '../store/actions/temps'
 
 const ChatScreen = (props) => {
   const dispatch = useDispatch();
@@ -41,36 +43,60 @@ const ChatScreen = (props) => {
 
   useEffect(() => {
     setIsLoading(true);
+    props.navigation.setOptions({
+      headerRight: () => {
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(tempActions.removeMatch(user.id))
+              props.navigation.goBack();
+            }}
+          > 
+            <Icon
+              containerStyle={{
+                marginLeft: 15,
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+              }}
+              type="feather"
+              size={30}
+              name="x"
+              color={Colors.accent}
+            />
+          </TouchableOpacity>
+        );
+      },
+    });
     fetchMessages().then(() => {
       setIsLoading(false);
     });
   }, [dispatch, user]);
 
   const onSendHandler = (newMessages) => {
-    newMessages.forEach((item)=>{
-      item.createdAt= new Date().toISOString()
-    }) 
+    newMessages.forEach((item) => {
+      item.createdAt = new Date().toISOString();
+    });
     dispatch(messageActions.sendMessage(currentUser, user, newMessages));
   };
 
-  const renderBubble =(props)=> {
+  const renderBubble = (props) => {
     return (
       <Bubble
         {...props}
         wrapperStyle={{
           right: {
-            backgroundColor: Colors.primary
+            backgroundColor: Colors.primary,
           },
-          left:{
-            backgroundColor: Colors.accent
-          }
+          left: {
+            backgroundColor: Colors.accent,
+          },
         }}
       />
-    )
-  }
+    );
+  };
 
-
-  if(isLoading){
+  if (isLoading) {
     return null;
   }
 
@@ -85,9 +111,11 @@ const ChatScreen = (props) => {
       }}
       messages={messages}
       renderAvatarOnTop={true}
-      onPressAvatar={()=>{props.navigation.navigate("UserProfile",{
-        user:user
-      })}}
+      onPressAvatar={() => {
+        props.navigation.navigate("UserProfile", {
+          user: user,
+        });
+      }}
       renderBubble={renderBubble}
     />
   );

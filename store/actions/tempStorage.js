@@ -161,11 +161,11 @@ export const changeAbout = (newAbout) => {
 
 export const fetchCurrentUserGender = () => {
   return async (dispatch, getState) => {
-    console.log("aaya");
     const id = getState().auth.user.uid;
     const database = firebase.database();
-    database.ref(`/genders/${id}`).once("value", (snapshot) => {
-      console.log("gender sent", snapshot.val());
+    const dbRef = database.ref(`/genders/${id}`);
+    dbRef.off();
+    dbRef.on("value", (snapshot) => {
       dispatch({ type: FETCH_CURRENT_USER_GENDER, data: snapshot.val() });
     });
   };
