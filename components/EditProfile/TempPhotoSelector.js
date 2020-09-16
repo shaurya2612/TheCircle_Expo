@@ -7,6 +7,7 @@ import PhotoCard from "../PhotoCard";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import * as tempStorageActions from "../../store/actions/tempStorage";
+
 const verifyPermissions = async () => {
   const result = await Permissions.askAsync(Permissions.CAMERA_ROLL);
   if (result.status != "granted") {

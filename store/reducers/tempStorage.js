@@ -7,13 +7,16 @@ import {
   FETCH_CURRENT_USER_PROFILE_DATA,
   FETCH_CURRENT_USER_GENDER,
   FETCH_CURRENT_USER_IMAGES_ORDER,
+  FETCH_CURRENT_USER_ABOUT,
+  FETCH_CURRENT_USER_CARDS,
 } from "../actions/tempStorage";
 
 initialState = {
   currentUser: { null: true },
   currentUserImages: [],
   currentUserImagesOrder: [],
-  currentUserProfileData: { null: true },
+  currentUserAbout: { null: true },
+  currentUserCards: { null: true },
   currentUserGender: { null: true },
   tempUser: { null: true },
   tempImages: [],
@@ -54,23 +57,24 @@ export default (state = initialState, action) => {
       }
     case FETCH_CURRENT_USER_IMAGES:
       return { ...state, currentUserImages: action.images };
-    case FETCH_CURRENT_USER_PROFILE_DATA:
+    case FETCH_CURRENT_USER_ABOUT:
+      return { ...state, currentUserAbout: action.data };
+    case FETCH_CURRENT_USER_CARDS:
       // sorting cards according to pos
       if (action.data) {
-        if (action.data.cards) {
-          let cardsArr = Object.entries(action.data.cards);
-          cardsArr.sort((a, b) => {
-            return a[1].pos - b[1].pos;
-          });
-          let sortedCards = {};
-          cardsArr.forEach((item) => {
-            sortedCards[item[0]] = item[1];
-          });
-          console.log("sorted cards", sortedCards);
-          action.data.cards = sortedCards;
-        }
+        let cardsArr = Object.entries(action.data);
+        cardsArr.sort((a, b) => {
+          return a[1].pos - b[1].pos;
+        });
+        let sortedCards = {};
+        cardsArr.forEach((item) => {
+          sortedCards[item[0]] = item[1];
+        });
+        console.log("sorted cards", sortedCards);
+        action.data.cards = sortedCards;
+
         //////////////////////////////////
-        return { ...state, currentUserProfileData: action.data };
+        return { ...state, currentUserCards: action.data.cards };
       } else {
         return { ...state, currentUserProfileData: { null: true } };
       }

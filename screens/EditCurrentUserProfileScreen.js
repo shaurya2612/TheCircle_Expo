@@ -1,28 +1,23 @@
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import Center from "../components/Center";
-import { TextInput } from "react-native-paper";
 import Colors from "../constants/Colors";
 import { useDispatch, useSelector } from "react-redux";
 import * as tempStorageActions from "../store/actions/tempStorage";
 import { Icon } from "react-native-elements";
 import EditProfileScreenTextInput from "../components/EditProfile/EditProfileScreenTextInput";
-import PhotoSelector from "../components/EditProfile/PhotoSelector";
-import IconCards from "../components/Profile/IconCards";
 import CardSelector from "../components/EditProfile/CardSelector";
 import TempPhotoSelector from "../components/EditProfile/TempPhotoSelector";
 
 const EditCurrentUserProfileScreen = (props) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const profileData = useSelector(
-    (state) => state.tempStorage.currentUserProfileData
+  const about = useSelector(
+    (state) => state.tempStorage.currentUserAbout
   );
   const [userImages, setUserImages] = useState(
     useSelector((state) => state.tempStorage.currentUserImages)
@@ -30,7 +25,7 @@ const EditCurrentUserProfileScreen = (props) => {
   const [userImagesOrder, setUserImagesOrder] = useState(
     useSelector((state) => state.tempStorage.currentUserImagesOrder)
   );
-  const [about, setAbout] = useState(profileData.about);
+  const [currAbout, setCurrAbout] = useState(about);
   const [isDragging, setIsDragging] = useState(false);
   const [finalCardOrder, setCardItemOrder] = useState(null);
   const fetchedUserImagesOrder = useSelector(
@@ -44,13 +39,13 @@ const EditCurrentUserProfileScreen = (props) => {
   const changeImagesOrder = () => {
     dispatch(tempStorageActions.changeCurrentUserImagesOrder(userImagesOrder));
   };
-
+  const cards = useSelector(state => state.tempStorage.currentUserCards);
   const saveChanges = () => {
-    if (profileData.null || about != profileData.about) {
-      if (about === "" || about == undefined) {
+    if (about.null || currAbout != about) {
+      if (currAbout === "" || currAbout == undefined) {
         dispatch(tempStorageActions.removeAbout());
       } else {
-        dispatch(tempStorageActions.changeAbout(about));
+        dispatch(tempStorageActions.changeAbout(currAbout));
       }
     }
 
@@ -59,7 +54,7 @@ const EditCurrentUserProfileScreen = (props) => {
       for (var i = 0; i < finalCardOrder.length; i++) {
         // itemOrder = [{key:"xyz", order:num}] and cards={xyz:{pos:num}}
         if (
-          profileData.cards[finalCardOrder[i].key].pos !==
+          cards[finalCardOrder[i].key].pos !==
           finalCardOrder[i].order
         ) {
           dispatch(
@@ -174,9 +169,9 @@ const EditCurrentUserProfileScreen = (props) => {
       <View style={styles.section}>
         <EditProfileScreenTextInput
           onChangeText={(value) => {
-            setAbout(value);
+            setCurrAbout(value);
           }}
-          value={about}
+          value={currAbout}
           placeholder={"Write something about yourself!"}
           header={"About: "}
         />
@@ -186,7 +181,7 @@ const EditCurrentUserProfileScreen = (props) => {
           add={() => {
             props.navigation.navigate("AddCardScreen");
           }}
-          cards={profileData.cards}
+          cards={cards}
           onDrag={setIsDragging}
           changeItemOrder={setCardItemOrder}
         />

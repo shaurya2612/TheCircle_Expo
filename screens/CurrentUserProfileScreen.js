@@ -18,8 +18,8 @@ import IconCards from "../components/Profile/IconCards";
 
 const CurrentUserProfileScreen = (props) => {
   const images = useSelector((state) => state.tempStorage.currentUserImages);
-  const profileData = useSelector(
-    (state) => state.tempStorage.currentUserProfileData
+  const about = useSelector(
+    (state) => state.tempStorage.currentUserAbout
   );
   const imagesOrder = useSelector(
     (state) => state.tempStorage.currentUserImagesOrder
@@ -29,7 +29,7 @@ const CurrentUserProfileScreen = (props) => {
   const user = useSelector((state) => state.tempStorage.currentUser);
   const imagesUploaded = useSelector(state => state.loading.currentUserImagesUpdated);
   const dispatch = useDispatch();
-
+  const cards = useSelector(state => state.tempStorage.currentUserCards);
   const fetchImages = async () => {
     dispatch(tempStorageActions.fetchCurrentUserImages());
   };
@@ -40,22 +40,27 @@ const CurrentUserProfileScreen = (props) => {
 
   const goToEditProfileScreen = () => {
     props.navigation.navigate("EditCurrentUserProfileScreen", {
-      profileData: profileData,
+      about: about,
     });
   };
 
-  const fetchUserProfileData = async () => {
-    dispatch(tempStorageActions.fetchCurrentUserProfileData());
+  const fetchUserAbout = async () => {
+    dispatch(tempStorageActions.fetchCurrentUserAbout());
   };
 
-  console.log("pd", profileData);
+  const fetchUserCards = async () =>{
+    dispatch(tempStorageActions.fetchCurrentUserCards());
+  }
+
+  console.log("cards=====>");
+  console.log(JSON.stringify(cards));
 
   useEffect(() => {
     setImagesAreLoading(true);
     setProfileIsLoading(true);
     fetchImagesOrder().then(() => {
       console.log(imagesOrder);
-      Promise.all([fetchImagesOrder(), fetchUserProfileData()]).then(() => {
+      Promise.all([fetchImagesOrder(), fetchUserAbout(), fetchUserCards()]).then(() => {
         setProfileIsLoading(false);
       });
     });
@@ -65,7 +70,7 @@ const CurrentUserProfileScreen = (props) => {
     props.navigation.setParams({
       goToEditProfileScreen: goToEditProfileScreen,
     });
-  }, [profileData]);
+  }, [about, cards]);
 
   useEffect(() => {
     setImagesAreLoading(true);
@@ -115,15 +120,14 @@ const CurrentUserProfileScreen = (props) => {
             <Center style={{ backgroundColor: "blue" }}>
               <ActivityIndicator size="large" color={Colors.primary} />
             </Center>
-          ) : !profileData.null ? (
+          ) : !about.null ? (
             <View>
-              {profileData.about ? <TextCard text={profileData.about} /> : null}
-              {profileData.cardImages ? <HorizontalScrollCard /> : null}
+              {about ? <TextCard text={about} /> : null}
             </View>
           ) : (
             <Text>This person is too introverted :O</Text>
           )}
-          {profileData.cards ? <IconCards cards={profileData.cards} /> : null}
+          {cards ? <IconCards cards={cards} /> : null}
         </View>
       </ScrollView>
     </View>

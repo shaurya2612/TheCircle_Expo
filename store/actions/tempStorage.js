@@ -1,15 +1,13 @@
 export const FETCH_TEMP_USER_DATA = "FETCH_USER_DATA";
 export const FETCH_TEMP_USER_IMAGES = "FETCH_USER_IMAGES";
-export const FETCH_TEMP_USER_PROFILE_DATA = "FETCH_USER_PROFILE_DATA";
+export const FETCH_CURRENT_USER_ABOUT = "FETCH_CURRENT_USER_ABOUT";
 export const FETCH_CURRENT_USER_DATA = "FETCH_CURRENT_USER_DATA";
 export const FETCH_CURRENT_USER_IMAGES = "FETCH_CURRENT_USER_IMAGES";
-export const FETCH_CURRENT_USER_PROFILE_DATA =
-  "FETCH_CURRENT_USER_PROFILE_DATA";
 export const FETCH_CURRENT_USER_IMAGES_ORDER =
   "FETCH_CURRENT_USER_IMAGES_ORDER";
 export const FETCH_CURRENT_USER_GENDER = "FETCH_CURRENT_USER_GENDER";
 export const SET_IMAGES_UPLOADED = "SET_IMAGES_UPLOADED";
-
+export const FETCH_CURRENT_USER_CARDS = "FETCH_CURRENT_USER_CARDS";
 import firebase from "firebase";
 import { Platform } from "react-native";
 
@@ -42,15 +40,14 @@ export const fetchCurrentUserImages = () => {
   };
 };
 
-export const fetchCurrentUserProfileData = () => {
+export const fetchCurrentUserAbout = () => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
     const db = firebase.database();
-    const dbRef = db.ref(`/userProfileData/${id}`);
+    const dbRef = db.ref(`/about/${id}`);
     dbRef.off();
     dbRef.on("value", (snapshot) => {
-      console.log(snapshot.val());
-      dispatch({ type: FETCH_CURRENT_USER_PROFILE_DATA, data: snapshot.val() });
+      dispatch({ type: FETCH_CURRENT_USER_ABOUT, data: snapshot.val() });
     });
   };
 };
@@ -98,14 +95,14 @@ export const addImage = (key, uri) => {
   };
 };
 
-export const deleteImage = (key) =>{
-  return async (dispatch, getState) =>{
+export const deleteImage = (key) => {
+  return async (dispatch, getState) => {
     const storage = firebase.storage();
     const id = getState().auth.user.uid;
     const storageRef = storage.ref(`/userImages/${id}`);
     await storageRef.child(key.toString()).delete();
-  }
-}
+  };
+};
 
 export const fetchTempUserData = (id) => {
   return (dispatch, getState) => {
@@ -147,7 +144,7 @@ export const removeAbout = () => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
     const database = firebase.database();
-    await database.ref(`/userProfileData/${id}`).child("about").remove();
+    await database.ref(`/about/${id}`).remove();
   };
 };
 
@@ -155,9 +152,10 @@ export const changeAbout = (newAbout) => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
     const database = firebase.database();
-    database.ref(`/userProfileData/${id}`).update({ about: newAbout });
+    database.ref(`/about/${id}`).set(newAbout);
   };
 };
+
 
 export const fetchCurrentUserGender = () => {
   return async (dispatch, getState) => {
@@ -171,19 +169,32 @@ export const fetchCurrentUserGender = () => {
   };
 };
 
+export const fetchCurrentUserCards = () => {
+  return async (dispatch, getState) => {
+    const id = getState().auth.user.uid;
+    const database = firebase.database();
+    const dbRef = database.ref(`/cards/${id}`);
+    dbRef.off();
+    dbRef.on("value", (snapshot) => {
+      dispatch({ type: FETCH_CURRENT_USER_CARDS, data: snapshot.val() });
+    });
+  };
+};
+
+
 export const addCard = (head, emoji, ans) => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
     let pos;
-    if (getState().tempStorage.currentUserProfileData.cards) {
-      pos = Object.entries(getState().tempStorage.currentUserProfileData.cards)
+    if (getState().tempStorage.currentUserCards) {
+      pos = Object.entries(getState().tempStorage.currentUserCards)
         .length;
     } else {
       pos = 0;
     }
     console.log(id, pos);
     const db = firebase.database();
-    var ref = await db.ref(`/userProfileData/${id}/cards`).push();
+    var ref = await db.ref(`/cards/${id}`).push();
     await ref.set({
       head: head,
       emoji: emoji,
@@ -198,7 +209,7 @@ export const changeCardPos = (key, newPos) => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
     const db = firebase.database();
-    const ref = db.ref(`/userProfileData/${id}/cards/${key}`);
+    const ref = db.ref(`/cards/${id}/${key}`);
     await ref.child("pos").set(newPos);
   };
 };

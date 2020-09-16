@@ -1,23 +1,16 @@
 import React from "react";
 import { View, StyleSheet, Button, TouchableHighlight } from "react-native";
-import { Icon } from "react-native-elements";
 import Center from "../Center";
 import { Text } from "react-native-paper";
 import Colors from "../../constants/Colors";
 //{1:{head:"turn on" ans:"eyes", emoji:"o"}}
 const IconCards = (props) => {
   const generateCards = () => {
-    if (!props.cards) return;
+    if (props.cards.null) return;
     let ans = [];
-    let modCards = Object.keys(props.cards)
-      .sort()
-      .reduce((obj, key) => {
-        obj[key] = props.cards[key];
-        return obj;
-      }, {});
     let cards = new Map(Object.entries(props.cards));
     let count = 0;
-    cards.forEach((value, key, map) => {
+    cards.forEach((value) => {
       ans.push(
         // <View style={count%2==0?styles.subContainer:null}>
         <View style={styles.card}>
