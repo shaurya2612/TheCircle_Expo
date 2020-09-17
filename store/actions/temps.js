@@ -56,7 +56,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
           const chosenPermiId = permis[randomPermiIndex]; //choosed the permi
           let temps = [];
           let hasPotentialMatches;
-          if (currentUser.interestedIn != "Both") {
+          if (currentUserGenderData.interestedIn != "Both") {
             //interested in either male or female
             await db
               .ref(`/permis/${chosenPermiId}`)
@@ -87,7 +87,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
                   temps = Object.keys(snapshot.val());
                   console.log("temps", temps);
                   if (temps.indexOf(currentUser.uid) >= 0) {
-                    temps.splice(temps.indexOf(currentUser.uid));
+                    temps.splice(temps.indexOf(currentUser.uid), 1);
                   }
                   hasPotentialMatches = true;
                 } else {
@@ -103,6 +103,7 @@ export const changeCurrentUserMatchingStatus = (status) => {
           let minTime = new Date(8640000000000000);
 
           for (var i = 0; i < temps.length; i++) {
+            console.log(temps[i]);
             const dbRef = db.ref(`/waitingUsers/${temps[i]}`);
             await dbRef.once("value", async (snapshot) => {
               if (snapshot.exists()) {
@@ -120,8 +121,11 @@ export const changeCurrentUserMatchingStatus = (status) => {
                     const matchesRef = db.ref(
                       `/matches/${currentUser.uid}/${temps[i]}`
                     );
-                    matchesRef.on("value", (snapshot) => {
-                      if (!snapshot.exists()) isFit = true;
+                    await matchesRef.once("value", (snapshot) => {
+                      if (!snapshot.exists()) {
+                        isFit = true;
+                        console.log("isFit made true")
+                      }
                       matchesRef.off();
                     });
                   }
@@ -134,13 +138,15 @@ export const changeCurrentUserMatchingStatus = (status) => {
               }
             });
           }
+          
           if (chosenTempId) break;
           else {
             permis.splice(randomPermiIndex, 1);
             continue;
           }
         }
-
+        
+        console.log(chosenTempId);
         if (chosenTempId) {
           dispatch(createTempChatRoom(chosenTempId));
           status = 2;
