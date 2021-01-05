@@ -14,4 +14,4 @@ Made from React-Native, Redux, Firebase Realtime Database.
 
 4. Users can turn their matching on or off at any time, making them available, or unavailable for chatrooms.
 
-![](CircleMatching.gif)
+![](CircleMatching.gif) ![](CircleProfile.gif)
