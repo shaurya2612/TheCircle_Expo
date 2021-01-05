@@ -2,6 +2,9 @@
 An Algorithm Centric Networking app.
 Made from React-Native, Redux, Firebase Realtime Database.
 
+                       Matching with another User  | Your profile and Editing options
+-------------------------------------------------- | -----------------------------------------------------
+![Matching with another user](CircleMatching.gif)  | ![Your profile and editing options](CircleProfile.gif)
 
 ![Matching with another user](CircleMatching.gif)  ![Your profile and editing options](CircleProfile.gif)
 
