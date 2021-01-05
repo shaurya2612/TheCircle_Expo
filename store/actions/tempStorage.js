@@ -60,7 +60,10 @@ export const fetchCurrentUserImagesOrder = () => {
     dbRef.off();
     dbRef.on("value", (snapshot) => {
       let dataString = snapshot.val();
-      let data = dataString.split(" ").map((item) => parseInt(item));
+      let data;
+      if (dataString) {
+         data = dataString.split(" ").map((item) => parseInt(item));
+      }
       dispatch({ type: FETCH_CURRENT_USER_IMAGES_ORDER, data: data });
     });
   };
@@ -156,7 +159,6 @@ export const changeAbout = (newAbout) => {
   };
 };
 
-
 export const fetchCurrentUserGender = () => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
@@ -181,14 +183,12 @@ export const fetchCurrentUserCards = () => {
   };
 };
 
-
 export const addCard = (head, emoji, ans) => {
   return async (dispatch, getState) => {
     const id = getState().auth.user.uid;
     let pos;
     if (getState().tempStorage.currentUserCards) {
-      pos = Object.entries(getState().tempStorage.currentUserCards)
-        .length;
+      pos = Object.entries(getState().tempStorage.currentUserCards).length;
     } else {
       pos = 0;
     }

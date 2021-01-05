@@ -8,7 +8,7 @@ const CardSelector = (props) => {
   const [cardDragging, setIsCardDragging] = useState(false);
 
   const generateCards = () => {
-    if (!props.cards) return;
+    if (props.cards.null) return null;
     let ans = [];
     let modCards = Object.keys(props.cards)
       .sort()
@@ -66,7 +66,7 @@ const CardSelector = (props) => {
             props.onDrag(true);
           }}
         >
-          {generateCards()}
+          {generateCards()??<View></View>}
         </SortableGrid>
       ) : null}
     </View>

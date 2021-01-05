@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
 import Colors from "../constants/Colors";
 import { useDispatch, useSelector } from "react-redux";
 import * as tempStorageActions from "../store/actions/tempStorage";
@@ -16,9 +11,7 @@ import TempPhotoSelector from "../components/EditProfile/TempPhotoSelector";
 const EditCurrentUserProfileScreen = (props) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const about = useSelector(
-    (state) => state.tempStorage.currentUserAbout
-  );
+  const about = useSelector((state) => state.tempStorage.currentUserAbout);
   const [userImages, setUserImages] = useState(
     useSelector((state) => state.tempStorage.currentUserImages)
   );
@@ -39,7 +32,7 @@ const EditCurrentUserProfileScreen = (props) => {
   const changeImagesOrder = () => {
     dispatch(tempStorageActions.changeCurrentUserImagesOrder(userImagesOrder));
   };
-  const cards = useSelector(state => state.tempStorage.currentUserCards);
+  const cards = useSelector((state) => state.tempStorage.currentUserCards);
   const saveChanges = () => {
     if (about.null || currAbout != about) {
       if (currAbout === "" || currAbout == undefined) {
@@ -53,10 +46,7 @@ const EditCurrentUserProfileScreen = (props) => {
       //card order
       for (var i = 0; i < finalCardOrder.length; i++) {
         // itemOrder = [{key:"xyz", order:num}] and cards={xyz:{pos:num}}
-        if (
-          cards[finalCardOrder[i].key].pos !==
-          finalCardOrder[i].order
-        ) {
+        if (cards[finalCardOrder[i].key].pos !== finalCardOrder[i].order) {
           dispatch(
             tempStorageActions.changeCardPos(
               finalCardOrder[i].key,
@@ -89,7 +79,7 @@ const EditCurrentUserProfileScreen = (props) => {
       console.log(userImages[i].includes("https://"));
       if (!userImages[i].includes("https://")) {
         console.log("add image is invoked");
-        dispatch(tempStorageActions.addImage(nextKey, userImages[i]))
+        dispatch(tempStorageActions.addImage(nextKey, userImages[i]));
         nextKey++;
       }
     }
@@ -177,14 +167,16 @@ const EditCurrentUserProfileScreen = (props) => {
         />
       </View>
       <View style={styles.section}>
-        <CardSelector
-          add={() => {
-            props.navigation.navigate("AddCardScreen");
-          }}
-          cards={cards}
-          onDrag={setIsDragging}
-          changeItemOrder={setCardItemOrder}
-        />
+        {cards ? (
+          <CardSelector
+            add={() => {
+              props.navigation.navigate("AddCardScreen");
+            }}
+            cards={cards}
+            onDrag={setIsDragging}
+            changeItemOrder={setCardItemOrder}
+          />
+        ) : null}
       </View>
     </ScrollView>
   );

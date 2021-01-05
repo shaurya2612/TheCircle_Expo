@@ -78,6 +78,8 @@ const CurrentUserProfileScreen = (props) => {
     setImagesAreLoading(false);
   }, [imagesOrder, imagesUploaded]);
 
+  console.log("about", about);
+
   return (
     <View style={styles.root}>
       <View style={{ height: 300, backgroundColor: "white" }}>
@@ -120,7 +122,7 @@ const CurrentUserProfileScreen = (props) => {
             <Center style={{ backgroundColor: "blue" }}>
               <ActivityIndicator size="large" color={Colors.primary} />
             </Center>
-          ) : !about.null ? (
+          ) : about &&!(about.null) ? (
             <View>
               {about ? <TextCard text={about} /> : null}
             </View>

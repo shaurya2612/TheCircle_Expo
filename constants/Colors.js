@@ -13,3 +13,5 @@ export default {
 //DARK THEME = P - #1d1e1f , A - #e2e2e2 , G - #ff4845
 // red=>#ff4845
 // FF8C00
+
+// great blue p- #011F35 darkbg - #00142B 
