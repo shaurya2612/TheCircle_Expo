@@ -13,5 +13,5 @@ Made from React-Native, Redux, Firebase Realtime Database.
 3. If both the temps in a chatroom like each other at the same time, they are shifted to each other matches, where their identity is revealed. Their previous chat persists
 
 4. Users can turn their matching on or off at any time, making them available, or unavailable for chatrooms.
-
-![Matching with another user](CircleMatching.gif) ![Your profile and editing options](CircleProfile.gif)
+                **Matching process**                      **User Profile and Editing options**
+![Matching with another user](CircleMatching.gif)  ![Your profile and editing options](CircleProfile.gif)
